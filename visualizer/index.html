@@ -1,0 +1,2362 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Data Visualization: Pixel Color Averages by Race in Chest X-Ray</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script> -->
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/box2.js"></script>
+    <!-- <link href="css/simple-grid.min.css" rel='stylesheet' type='text/css' /> -->
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+    <style>
+        body {
+            font: 10px sans-serif;
+            background: #fffcf8;
+            font-family: Roboto;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        /* Box Plot starts */
+        .box {
+            font: 10px sans-serif;
+        }
+
+        .box line,
+        .box rect,
+        .box circle {
+            fill: steelblue;
+            stroke: #000;
+            stroke-width: 1px;
+        }
+
+        .box .center {
+            stroke-dasharray: 3, 3;
+        }
+
+        .box .outlier {
+            fill: none;
+            stroke: #000;
+        }
+
+        .axis {
+            font: 12px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        /* Box Plot ends here */
+
+        /* svg {
+            font-family: Sans-Serif, Arial;
+        }
+
+        .line {
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .axis path {
+            stroke: black;
+        }
+
+        .text {
+            font-size: 12px;
+        }
+
+        .title-text {
+            font-size: 12px;
+        } */
+
+        .header-text {
+            /* width: 506px;
+            height: 47px; */
+            margin: 0px 0px 15px 0px;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: bold;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #303030;
+            padding: 10px;
+            background: #e8e8e854;
+        }
+
+        .project-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-text a {
+            color: #303030 !important;
+            padding: 5px 10px;
+        }
+
+        .header-text a:hover {
+            color: #FFF !important;
+            background: #303030;
+        }
+
+        .label-header {
+            font-size: 15px !important;
+            font-weight: bold;
+        }
+		
+		.imageWrapper {
+		  position: relative;
+		}
+		
+		.overlayImage {
+		  position: absolute;
+		  top: 0;
+		  left: 0;
+		}
+		
+		.overlayImageRed {
+			position: absolute;
+			top: 0;
+			left: 0;
+			opacity: 0.2;
+			filter: invert(86%) sepia(42%) saturate(4337%) hue-rotate(350deg) brightness(106%) contrast(108%);
+		}
+		
+		#T_8794b_ {
+			margin-left: 0;
+			margin-right: 0;
+			/* margin-top: 1em; */
+			border: none;
+			border-collapse: collapse;
+			border-spacing: 0;
+			color: black;
+			font-size: 16px;
+			background-color: transparent;
+			box-sizing: border-box;
+			line-height: 20px;
+		}
+		
+		.th {
+			text-align: right;
+			vertical-align: middle;
+			padding: 0.5em 0.5em;
+			line-height: normal;
+			white-space: normal;
+			max-width: none;
+			border: none;
+		}
+		
+		#T_8794b_row0_col0, #T_8794b_row0_col1, #T_8794b_row0_col2, #T_8794b_row0_col3, #T_8794b_row0_col4, #T_8794b_row0_col5, #T_8794b_row0_col7, #T_8794b_row0_col8, #T_8794b_row0_col9, #T_8794b_row0_col10, #T_8794b_row0_col11, #T_8794b_row0_col12, #T_8794b_row0_col13, #T_8794b_row0_col14, #T_8794b_row0_col15, #T_8794b_row0_col16, #T_8794b_row0_col17, #T_8794b_row0_col18, #T_8794b_row0_col19, #T_8794b_row0_col20, #T_8794b_row0_col21, #T_8794b_row0_col22, #T_8794b_row0_col23, #T_8794b_row0_col24, #T_8794b_row0_col25, #T_8794b_row0_col26, #T_8794b_row0_col28, #T_8794b_row0_col29, #T_8794b_row0_col30, #T_8794b_row0_col31, #T_8794b_row0_col32, #T_8794b_row0_col33, #T_8794b_row0_col34, #T_8794b_row0_col35, #T_8794b_row0_col36, #T_8794b_row0_col37, #T_8794b_row0_col38, #T_8794b_row0_col39, #T_8794b_row0_col40, #T_8794b_row0_col41, #T_8794b_row0_col42, #T_8794b_row0_col43, #T_8794b_row0_col44, #T_8794b_row0_col45, #T_8794b_row0_col46, #T_8794b_row0_col47, #T_8794b_row0_col48, #T_8794b_row0_col49, #T_8794b_row0_col50, #T_8794b_row0_col51, #T_8794b_row0_col52, #T_8794b_row0_col53, #T_8794b_row0_col54, #T_8794b_row0_col55, #T_8794b_row0_col56, #T_8794b_row0_col57, #T_8794b_row0_col58, #T_8794b_row0_col59, #T_8794b_row0_col60, #T_8794b_row0_col61, #T_8794b_row0_col62, #T_8794b_row0_col63, #T_8794b_row0_col64, #T_8794b_row0_col65, #T_8794b_row0_col66, #T_8794b_row0_col67, #T_8794b_row0_col68, #T_8794b_row0_col69, #T_8794b_row0_col70, #T_8794b_row0_col71, #T_8794b_row0_col72, #T_8794b_row0_col73, #T_8794b_row0_col74, #T_8794b_row0_col75, #T_8794b_row0_col76, #T_8794b_row0_col77, #T_8794b_row0_col78, #T_8794b_row0_col79, #T_8794b_row0_col80, #T_8794b_row0_col81, #T_8794b_row0_col82, #T_8794b_row0_col83, #T_8794b_row0_col84, #T_8794b_row0_col85, #T_8794b_row0_col86, #T_8794b_row0_col87, #T_8794b_row0_col88, #T_8794b_row0_col89, #T_8794b_row0_col90, #T_8794b_row0_col91, #T_8794b_row0_col92, #T_8794b_row0_col93, #T_8794b_row0_col94, #T_8794b_row0_col95, #T_8794b_row0_col96, #T_8794b_row0_col97, #T_8794b_row0_col98, #T_8794b_row0_col99, #T_8794b_row0_col100, #T_8794b_row0_col101, #T_8794b_row0_col102, #T_8794b_row0_col103, #T_8794b_row0_col104, #T_8794b_row0_col105, #T_8794b_row0_col106, #T_8794b_row0_col107, #T_8794b_row0_col108, #T_8794b_row0_col109, #T_8794b_row0_col110, #T_8794b_row0_col112, #T_8794b_row0_col123, #T_8794b_row0_col126, #T_8794b_row0_col127, #T_8794b_row0_col128, #T_8794b_row0_col129, #T_8794b_row0_col130, #T_8794b_row0_col131, #T_8794b_row0_col132, #T_8794b_row0_col133, #T_8794b_row0_col134, #T_8794b_row0_col135, #T_8794b_row0_col136, #T_8794b_row0_col137, #T_8794b_row0_col138, #T_8794b_row0_col139, #T_8794b_row0_col140, #T_8794b_row0_col141, #T_8794b_row0_col142, #T_8794b_row0_col143, #T_8794b_row0_col144, #T_8794b_row0_col145, #T_8794b_row0_col146, #T_8794b_row0_col147, #T_8794b_row0_col148, #T_8794b_row0_col149, #T_8794b_row0_col150, #T_8794b_row0_col151, #T_8794b_row0_col152, #T_8794b_row0_col153, #T_8794b_row0_col154, #T_8794b_row0_col155, #T_8794b_row0_col156, #T_8794b_row0_col157, #T_8794b_row0_col158, #T_8794b_row0_col159, #T_8794b_row0_col160, #T_8794b_row0_col161, #T_8794b_row0_col162, #T_8794b_row0_col163, #T_8794b_row0_col164, #T_8794b_row0_col165, #T_8794b_row0_col166, #T_8794b_row0_col167, #T_8794b_row0_col168, #T_8794b_row0_col169, #T_8794b_row0_col170, #T_8794b_row0_col171, #T_8794b_row0_col172, #T_8794b_row0_col173, #T_8794b_row0_col174, #T_8794b_row0_col175, #T_8794b_row0_col176, #T_8794b_row0_col177, #T_8794b_row0_col178, #T_8794b_row0_col179, #T_8794b_row0_col180, #T_8794b_row0_col181, #T_8794b_row0_col182, #T_8794b_row0_col183, #T_8794b_row0_col184, #T_8794b_row0_col185, #T_8794b_row0_col186, #T_8794b_row0_col187, #T_8794b_row0_col188, #T_8794b_row0_col189, #T_8794b_row0_col190, #T_8794b_row0_col191, #T_8794b_row0_col192, #T_8794b_row0_col193, #T_8794b_row0_col194, #T_8794b_row0_col195, #T_8794b_row0_col196, #T_8794b_row0_col197, #T_8794b_row0_col198, #T_8794b_row0_col199, #T_8794b_row0_col200, #T_8794b_row0_col201, #T_8794b_row0_col202, #T_8794b_row0_col203, #T_8794b_row0_col204, #T_8794b_row0_col205, #T_8794b_row0_col206, #T_8794b_row0_col207, #T_8794b_row0_col208, #T_8794b_row0_col209, #T_8794b_row0_col210, #T_8794b_row0_col211, #T_8794b_row0_col212, #T_8794b_row0_col213, #T_8794b_row0_col214, #T_8794b_row0_col215, #T_8794b_row0_col216, #T_8794b_row0_col217, #T_8794b_row0_col218, #T_8794b_row0_col219, #T_8794b_row0_col220, #T_8794b_row0_col221, #T_8794b_row0_col222, #T_8794b_row0_col223, #T_8794b_row0_col224, #T_8794b_row0_col225, #T_8794b_row0_col226, #T_8794b_row0_col227, #T_8794b_row0_col228, #T_8794b_row0_col229, #T_8794b_row0_col230, #T_8794b_row0_col231, #T_8794b_row0_col232, #T_8794b_row0_col233, #T_8794b_row0_col234, #T_8794b_row0_col235, #T_8794b_row0_col236, #T_8794b_row0_col237, #T_8794b_row0_col238, #T_8794b_row0_col240, #T_8794b_row0_col244, #T_8794b_row0_col245, #T_8794b_row0_col246, #T_8794b_row0_col247, #T_8794b_row0_col248, #T_8794b_row0_col251, #T_8794b_row0_col252, #T_8794b_row0_col253, #T_8794b_row0_col254, #T_8794b_row1_col0, #T_8794b_row1_col3, #T_8794b_row1_col5, #T_8794b_row1_col7, #T_8794b_row1_col8, #T_8794b_row1_col9, #T_8794b_row1_col10, #T_8794b_row1_col11, #T_8794b_row1_col12, #T_8794b_row1_col14, #T_8794b_row1_col15, #T_8794b_row1_col16, #T_8794b_row1_col17, #T_8794b_row1_col18, #T_8794b_row1_col19, #T_8794b_row1_col20, #T_8794b_row1_col21, #T_8794b_row1_col22, #T_8794b_row1_col23, #T_8794b_row1_col25, #T_8794b_row1_col26, #T_8794b_row1_col28, #T_8794b_row1_col29, #T_8794b_row1_col30, #T_8794b_row1_col31, #T_8794b_row1_col32, #T_8794b_row1_col33, #T_8794b_row1_col34, #T_8794b_row1_col35, #T_8794b_row1_col36, #T_8794b_row1_col37, #T_8794b_row1_col38, #T_8794b_row1_col39, #T_8794b_row1_col40, #T_8794b_row1_col41, #T_8794b_row1_col42, #T_8794b_row1_col43, #T_8794b_row1_col44, #T_8794b_row1_col45, #T_8794b_row1_col46, #T_8794b_row1_col47, #T_8794b_row1_col48, #T_8794b_row1_col49, #T_8794b_row1_col50, #T_8794b_row1_col51, #T_8794b_row1_col52, #T_8794b_row1_col53, #T_8794b_row1_col54, #T_8794b_row1_col55, #T_8794b_row1_col56, #T_8794b_row1_col57, #T_8794b_row1_col58, #T_8794b_row1_col59, #T_8794b_row1_col60, #T_8794b_row1_col61, #T_8794b_row1_col62, #T_8794b_row1_col63, #T_8794b_row1_col64, #T_8794b_row1_col65, #T_8794b_row1_col66, #T_8794b_row1_col67, #T_8794b_row1_col68, #T_8794b_row1_col69, #T_8794b_row1_col70, #T_8794b_row1_col71, #T_8794b_row1_col72, #T_8794b_row1_col73, #T_8794b_row1_col74, #T_8794b_row1_col75, #T_8794b_row1_col76, #T_8794b_row1_col77, #T_8794b_row1_col78, #T_8794b_row1_col79, #T_8794b_row1_col80, #T_8794b_row1_col81, #T_8794b_row1_col82, #T_8794b_row1_col83, #T_8794b_row1_col84, #T_8794b_row1_col85, #T_8794b_row1_col86, #T_8794b_row1_col87, #T_8794b_row1_col88, #T_8794b_row1_col89, #T_8794b_row1_col90, #T_8794b_row1_col91, #T_8794b_row1_col92, #T_8794b_row1_col93, #T_8794b_row1_col94, #T_8794b_row1_col95, #T_8794b_row1_col96, #T_8794b_row1_col97, #T_8794b_row1_col98, #T_8794b_row1_col99, #T_8794b_row1_col100, #T_8794b_row1_col101, #T_8794b_row1_col102, #T_8794b_row1_col103, #T_8794b_row1_col104, #T_8794b_row1_col105, #T_8794b_row1_col106, #T_8794b_row1_col107, #T_8794b_row1_col108, #T_8794b_row1_col109, #T_8794b_row1_col126, #T_8794b_row1_col128, #T_8794b_row1_col129, #T_8794b_row1_col130, #T_8794b_row1_col131, #T_8794b_row1_col132, #T_8794b_row1_col133, #T_8794b_row1_col134, #T_8794b_row1_col135, #T_8794b_row1_col136, #T_8794b_row1_col137, #T_8794b_row1_col138, #T_8794b_row1_col139, #T_8794b_row1_col140, #T_8794b_row1_col141, #T_8794b_row1_col142, #T_8794b_row1_col143, #T_8794b_row1_col144, #T_8794b_row1_col145, #T_8794b_row1_col146, #T_8794b_row1_col147, #T_8794b_row1_col148, #T_8794b_row1_col149, #T_8794b_row1_col150, #T_8794b_row1_col151, #T_8794b_row1_col152, #T_8794b_row1_col153, #T_8794b_row1_col154, #T_8794b_row1_col155, #T_8794b_row1_col156, #T_8794b_row1_col157, #T_8794b_row1_col158, #T_8794b_row1_col159, #T_8794b_row1_col160, #T_8794b_row1_col161, #T_8794b_row1_col162, #T_8794b_row1_col163, #T_8794b_row1_col164, #T_8794b_row1_col165, #T_8794b_row1_col166, #T_8794b_row1_col167, #T_8794b_row1_col168, #T_8794b_row1_col169, #T_8794b_row1_col170, #T_8794b_row1_col171, #T_8794b_row1_col172, #T_8794b_row1_col173, #T_8794b_row1_col174, #T_8794b_row1_col175, #T_8794b_row1_col176, #T_8794b_row1_col177, #T_8794b_row1_col178, #T_8794b_row1_col179, #T_8794b_row1_col180, #T_8794b_row1_col181, #T_8794b_row1_col182, #T_8794b_row1_col183, #T_8794b_row1_col184, #T_8794b_row1_col185, #T_8794b_row1_col186, #T_8794b_row1_col187, #T_8794b_row1_col188, #T_8794b_row1_col189, #T_8794b_row1_col190, #T_8794b_row1_col191, #T_8794b_row1_col192, #T_8794b_row1_col193, #T_8794b_row1_col194, #T_8794b_row1_col195, #T_8794b_row1_col196, #T_8794b_row1_col197, #T_8794b_row1_col198, #T_8794b_row1_col199, #T_8794b_row1_col200, #T_8794b_row1_col201, #T_8794b_row1_col202, #T_8794b_row1_col203, #T_8794b_row1_col204, #T_8794b_row1_col205, #T_8794b_row1_col206, #T_8794b_row1_col207, #T_8794b_row1_col208, #T_8794b_row1_col209, #T_8794b_row1_col210, #T_8794b_row1_col211, #T_8794b_row1_col212, #T_8794b_row1_col213, #T_8794b_row1_col214, #T_8794b_row1_col215, #T_8794b_row1_col216, #T_8794b_row1_col217, #T_8794b_row1_col218, #T_8794b_row1_col219, #T_8794b_row1_col220, #T_8794b_row1_col221, #T_8794b_row1_col222, #T_8794b_row1_col223, #T_8794b_row1_col224, #T_8794b_row1_col225, #T_8794b_row1_col226, #T_8794b_row1_col227, #T_8794b_row1_col228, #T_8794b_row1_col229, #T_8794b_row1_col230, #T_8794b_row1_col231, #T_8794b_row1_col232, #T_8794b_row1_col233, #T_8794b_row1_col234, #T_8794b_row1_col235, #T_8794b_row1_col236, #T_8794b_row1_col237, #T_8794b_row1_col238, #T_8794b_row1_col252, #T_8794b_row1_col253 {
+			color: green;
+		}
+		
+		#T_8794b_row0_col6, #T_8794b_row0_col27, #T_8794b_row0_col111, #T_8794b_row0_col113, #T_8794b_row0_col114, #T_8794b_row0_col115, #T_8794b_row0_col116, #T_8794b_row0_col117, #T_8794b_row0_col118, #T_8794b_row0_col119, #T_8794b_row0_col120, #T_8794b_row0_col121, #T_8794b_row0_col122, #T_8794b_row0_col124, #T_8794b_row0_col125, #T_8794b_row0_col239, #T_8794b_row0_col241, #T_8794b_row0_col242, #T_8794b_row0_col243, #T_8794b_row0_col249, #T_8794b_row0_col250, #T_8794b_row1_col1, #T_8794b_row1_col2, #T_8794b_row1_col4, #T_8794b_row1_col6, #T_8794b_row1_col13, #T_8794b_row1_col24, #T_8794b_row1_col27, #T_8794b_row1_col110, #T_8794b_row1_col111, #T_8794b_row1_col112, #T_8794b_row1_col113, #T_8794b_row1_col114, #T_8794b_row1_col115, #T_8794b_row1_col116, #T_8794b_row1_col117, #T_8794b_row1_col118, #T_8794b_row1_col119, #T_8794b_row1_col120, #T_8794b_row1_col121, #T_8794b_row1_col122, #T_8794b_row1_col123, #T_8794b_row1_col124, #T_8794b_row1_col125, #T_8794b_row1_col127, #T_8794b_row1_col239, #T_8794b_row1_col240, #T_8794b_row1_col241, #T_8794b_row1_col242, #T_8794b_row1_col243, #T_8794b_row1_col244, #T_8794b_row1_col245, #T_8794b_row1_col246, #T_8794b_row1_col247, #T_8794b_row1_col248, #T_8794b_row1_col249, #T_8794b_row1_col250, #T_8794b_row1_col251, #T_8794b_row1_col254 {
+			color: red;
+		}
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row header-text">
+            <div class="col s6 project-title">Data Visualization: Pixel Color Averages by Race in Chest X-Ray</div>
+            <!--<div class="col s1"><a href="#">HOME</a></div>
+            <div class="col s2"><a href="H517_Data_Visualization_Documentation_JAGV.pdf" target="_new">DOCUMENTATION</a></div>
+			<div class="col s1"><a href="https://youtu.be/Gc-4NRXPyvA" target="_new">VIDEO</a></div> -->
+            <!-- <div class="col s1"></div> -->
+        </div>
+        <div class="row">
+            <div class="col s12 m3">
+                <div class="card">
+                    <div class="card-content" style="height: 440px;">
+                        <!-- <span class="card-title">Filters</span> -->
+                        <div class="input-field col s12">
+                            <select id="race" multiple>
+                                <!-- <option value="" disabled></option> -->
+                                <option value="ASIAN">Asian</option>
+                                <option value="BLACK">Black</option>
+                                <option value="WHITE">White</option>
+                                <option value="HISPANIC">Hispanic</option>
+                            </select>
+                            <label class="label-header">Filter by Race</label>
+                        </div>
+                        <div class="input-field col s12" style="margin-top: 25px;">
+                            <label style="margin-top: -40px;" class="label-header">Filter by Sex</label>
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="MALE" class="filled-in" />
+                                    <span>Male</span>
+                                </label>
+                            </p>
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="FEMALE" class="filled-in" />
+                                    <span>Female</span>
+                                </label>
+                            </p>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="pixel_from" type="number" class="validate" value="1">
+                            <label for="pixel_from">Pixel From</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="pixel_to" type="number" class="validate" value="255">
+                            <label for="pixel_to">Pixel To</label>
+                        </div>
+						<div class="input-field col s12">
+                            <input id="line_number" type="number" class="validate" value="500">
+                            <label for="line_number">Lines for multi-line</label>
+                        </div>
+                        <div class="input-field col s12" style="margin-top: 25px;">
+                            <a class="waves-effect waves-light btn" id="filter-btn">Filter</a>
+                        </div>
+                    </div>
+                </div>
+				<div class="row">
+					<div class="col s12 m12" style="height: 325px">
+						<div class="card">
+							<div class="imageWrapper" id="image">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12 m12">
+						<div class="card">
+							<a href="https://commons.wikimedia.org/wiki/File:Normal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg">
+								Image sourced from Wikimedia Commons under Creative Commons CCO 1.0 Universal Public Domain Dedication</a>
+						</div>
+					</div>
+				</div>
+            </div>
+            <div class="col s12 m9">
+                <div class="row">
+                    <div class="col s12 m12">
+						<label class="label-header">Average Pixel Grayscale Value by Race</label>
+                        <div class="card">
+                            <div class="card-container" id="summary-line-chart">
+                            </div>
+							
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 m12">
+						<label class="label-header">Pixel Grayscale Value by Image</label>
+                        <div class="card">
+                            <div class="card-container" id="line-chart">
+                            </div>
+                        </div>
+                    </div>
+				</div>
+				<div class="row">
+                    <div class="col s12 m12">
+						<label class="label-header">One-Way ANOVA for Pixel Values</label>
+                        <div class="card">
+                            <div class="card-container" id="anova-chart" style="overflow-x: scroll;">
+							<table id="T_8794b_">
+							  <thead>
+								<tr>
+								  <th class="blank level0">&nbsp;</th>
+								  <th class="col_heading level0 col0">0</th>
+								  <th class="col_heading level0 col1">1</th>
+								  <th class="col_heading level0 col2">2</th>
+								  <th class="col_heading level0 col3">3</th>
+								  <th class="col_heading level0 col4">4</th>
+								  <th class="col_heading level0 col5">5</th>
+								  <th class="col_heading level0 col6">6</th>
+								  <th class="col_heading level0 col7">7</th>
+								  <th class="col_heading level0 col8">8</th>
+								  <th class="col_heading level0 col9">9</th>
+								  <th class="col_heading level0 col10">10</th>
+								  <th class="col_heading level0 col11">11</th>
+								  <th class="col_heading level0 col12">12</th>
+								  <th class="col_heading level0 col13">13</th>
+								  <th class="col_heading level0 col14">14</th>
+								  <th class="col_heading level0 col15">15</th>
+								  <th class="col_heading level0 col16">16</th>
+								  <th class="col_heading level0 col17">17</th>
+								  <th class="col_heading level0 col18">18</th>
+								  <th class="col_heading level0 col19">19</th>
+								  <th class="col_heading level0 col20">20</th>
+								  <th class="col_heading level0 col21">21</th>
+								  <th class="col_heading level0 col22">22</th>
+								  <th class="col_heading level0 col23">23</th>
+								  <th class="col_heading level0 col24">24</th>
+								  <th class="col_heading level0 col25">25</th>
+								  <th class="col_heading level0 col26">26</th>
+								  <th class="col_heading level0 col27">27</th>
+								  <th class="col_heading level0 col28">28</th>
+								  <th class="col_heading level0 col29">29</th>
+								  <th class="col_heading level0 col30">30</th>
+								  <th class="col_heading level0 col31">31</th>
+								  <th class="col_heading level0 col32">32</th>
+								  <th class="col_heading level0 col33">33</th>
+								  <th class="col_heading level0 col34">34</th>
+								  <th class="col_heading level0 col35">35</th>
+								  <th class="col_heading level0 col36">36</th>
+								  <th class="col_heading level0 col37">37</th>
+								  <th class="col_heading level0 col38">38</th>
+								  <th class="col_heading level0 col39">39</th>
+								  <th class="col_heading level0 col40">40</th>
+								  <th class="col_heading level0 col41">41</th>
+								  <th class="col_heading level0 col42">42</th>
+								  <th class="col_heading level0 col43">43</th>
+								  <th class="col_heading level0 col44">44</th>
+								  <th class="col_heading level0 col45">45</th>
+								  <th class="col_heading level0 col46">46</th>
+								  <th class="col_heading level0 col47">47</th>
+								  <th class="col_heading level0 col48">48</th>
+								  <th class="col_heading level0 col49">49</th>
+								  <th class="col_heading level0 col50">50</th>
+								  <th class="col_heading level0 col51">51</th>
+								  <th class="col_heading level0 col52">52</th>
+								  <th class="col_heading level0 col53">53</th>
+								  <th class="col_heading level0 col54">54</th>
+								  <th class="col_heading level0 col55">55</th>
+								  <th class="col_heading level0 col56">56</th>
+								  <th class="col_heading level0 col57">57</th>
+								  <th class="col_heading level0 col58">58</th>
+								  <th class="col_heading level0 col59">59</th>
+								  <th class="col_heading level0 col60">60</th>
+								  <th class="col_heading level0 col61">61</th>
+								  <th class="col_heading level0 col62">62</th>
+								  <th class="col_heading level0 col63">63</th>
+								  <th class="col_heading level0 col64">64</th>
+								  <th class="col_heading level0 col65">65</th>
+								  <th class="col_heading level0 col66">66</th>
+								  <th class="col_heading level0 col67">67</th>
+								  <th class="col_heading level0 col68">68</th>
+								  <th class="col_heading level0 col69">69</th>
+								  <th class="col_heading level0 col70">70</th>
+								  <th class="col_heading level0 col71">71</th>
+								  <th class="col_heading level0 col72">72</th>
+								  <th class="col_heading level0 col73">73</th>
+								  <th class="col_heading level0 col74">74</th>
+								  <th class="col_heading level0 col75">75</th>
+								  <th class="col_heading level0 col76">76</th>
+								  <th class="col_heading level0 col77">77</th>
+								  <th class="col_heading level0 col78">78</th>
+								  <th class="col_heading level0 col79">79</th>
+								  <th class="col_heading level0 col80">80</th>
+								  <th class="col_heading level0 col81">81</th>
+								  <th class="col_heading level0 col82">82</th>
+								  <th class="col_heading level0 col83">83</th>
+								  <th class="col_heading level0 col84">84</th>
+								  <th class="col_heading level0 col85">85</th>
+								  <th class="col_heading level0 col86">86</th>
+								  <th class="col_heading level0 col87">87</th>
+								  <th class="col_heading level0 col88">88</th>
+								  <th class="col_heading level0 col89">89</th>
+								  <th class="col_heading level0 col90">90</th>
+								  <th class="col_heading level0 col91">91</th>
+								  <th class="col_heading level0 col92">92</th>
+								  <th class="col_heading level0 col93">93</th>
+								  <th class="col_heading level0 col94">94</th>
+								  <th class="col_heading level0 col95">95</th>
+								  <th class="col_heading level0 col96">96</th>
+								  <th class="col_heading level0 col97">97</th>
+								  <th class="col_heading level0 col98">98</th>
+								  <th class="col_heading level0 col99">99</th>
+								  <th class="col_heading level0 col100">100</th>
+								  <th class="col_heading level0 col101">101</th>
+								  <th class="col_heading level0 col102">102</th>
+								  <th class="col_heading level0 col103">103</th>
+								  <th class="col_heading level0 col104">104</th>
+								  <th class="col_heading level0 col105">105</th>
+								  <th class="col_heading level0 col106">106</th>
+								  <th class="col_heading level0 col107">107</th>
+								  <th class="col_heading level0 col108">108</th>
+								  <th class="col_heading level0 col109">109</th>
+								  <th class="col_heading level0 col110">110</th>
+								  <th class="col_heading level0 col111">111</th>
+								  <th class="col_heading level0 col112">112</th>
+								  <th class="col_heading level0 col113">113</th>
+								  <th class="col_heading level0 col114">114</th>
+								  <th class="col_heading level0 col115">115</th>
+								  <th class="col_heading level0 col116">116</th>
+								  <th class="col_heading level0 col117">117</th>
+								  <th class="col_heading level0 col118">118</th>
+								  <th class="col_heading level0 col119">119</th>
+								  <th class="col_heading level0 col120">120</th>
+								  <th class="col_heading level0 col121">121</th>
+								  <th class="col_heading level0 col122">122</th>
+								  <th class="col_heading level0 col123">123</th>
+								  <th class="col_heading level0 col124">124</th>
+								  <th class="col_heading level0 col125">125</th>
+								  <th class="col_heading level0 col126">126</th>
+								  <th class="col_heading level0 col127">127</th>
+								  <th class="col_heading level0 col128">128</th>
+								  <th class="col_heading level0 col129">129</th>
+								  <th class="col_heading level0 col130">130</th>
+								  <th class="col_heading level0 col131">131</th>
+								  <th class="col_heading level0 col132">132</th>
+								  <th class="col_heading level0 col133">133</th>
+								  <th class="col_heading level0 col134">134</th>
+								  <th class="col_heading level0 col135">135</th>
+								  <th class="col_heading level0 col136">136</th>
+								  <th class="col_heading level0 col137">137</th>
+								  <th class="col_heading level0 col138">138</th>
+								  <th class="col_heading level0 col139">139</th>
+								  <th class="col_heading level0 col140">140</th>
+								  <th class="col_heading level0 col141">141</th>
+								  <th class="col_heading level0 col142">142</th>
+								  <th class="col_heading level0 col143">143</th>
+								  <th class="col_heading level0 col144">144</th>
+								  <th class="col_heading level0 col145">145</th>
+								  <th class="col_heading level0 col146">146</th>
+								  <th class="col_heading level0 col147">147</th>
+								  <th class="col_heading level0 col148">148</th>
+								  <th class="col_heading level0 col149">149</th>
+								  <th class="col_heading level0 col150">150</th>
+								  <th class="col_heading level0 col151">151</th>
+								  <th class="col_heading level0 col152">152</th>
+								  <th class="col_heading level0 col153">153</th>
+								  <th class="col_heading level0 col154">154</th>
+								  <th class="col_heading level0 col155">155</th>
+								  <th class="col_heading level0 col156">156</th>
+								  <th class="col_heading level0 col157">157</th>
+								  <th class="col_heading level0 col158">158</th>
+								  <th class="col_heading level0 col159">159</th>
+								  <th class="col_heading level0 col160">160</th>
+								  <th class="col_heading level0 col161">161</th>
+								  <th class="col_heading level0 col162">162</th>
+								  <th class="col_heading level0 col163">163</th>
+								  <th class="col_heading level0 col164">164</th>
+								  <th class="col_heading level0 col165">165</th>
+								  <th class="col_heading level0 col166">166</th>
+								  <th class="col_heading level0 col167">167</th>
+								  <th class="col_heading level0 col168">168</th>
+								  <th class="col_heading level0 col169">169</th>
+								  <th class="col_heading level0 col170">170</th>
+								  <th class="col_heading level0 col171">171</th>
+								  <th class="col_heading level0 col172">172</th>
+								  <th class="col_heading level0 col173">173</th>
+								  <th class="col_heading level0 col174">174</th>
+								  <th class="col_heading level0 col175">175</th>
+								  <th class="col_heading level0 col176">176</th>
+								  <th class="col_heading level0 col177">177</th>
+								  <th class="col_heading level0 col178">178</th>
+								  <th class="col_heading level0 col179">179</th>
+								  <th class="col_heading level0 col180">180</th>
+								  <th class="col_heading level0 col181">181</th>
+								  <th class="col_heading level0 col182">182</th>
+								  <th class="col_heading level0 col183">183</th>
+								  <th class="col_heading level0 col184">184</th>
+								  <th class="col_heading level0 col185">185</th>
+								  <th class="col_heading level0 col186">186</th>
+								  <th class="col_heading level0 col187">187</th>
+								  <th class="col_heading level0 col188">188</th>
+								  <th class="col_heading level0 col189">189</th>
+								  <th class="col_heading level0 col190">190</th>
+								  <th class="col_heading level0 col191">191</th>
+								  <th class="col_heading level0 col192">192</th>
+								  <th class="col_heading level0 col193">193</th>
+								  <th class="col_heading level0 col194">194</th>
+								  <th class="col_heading level0 col195">195</th>
+								  <th class="col_heading level0 col196">196</th>
+								  <th class="col_heading level0 col197">197</th>
+								  <th class="col_heading level0 col198">198</th>
+								  <th class="col_heading level0 col199">199</th>
+								  <th class="col_heading level0 col200">200</th>
+								  <th class="col_heading level0 col201">201</th>
+								  <th class="col_heading level0 col202">202</th>
+								  <th class="col_heading level0 col203">203</th>
+								  <th class="col_heading level0 col204">204</th>
+								  <th class="col_heading level0 col205">205</th>
+								  <th class="col_heading level0 col206">206</th>
+								  <th class="col_heading level0 col207">207</th>
+								  <th class="col_heading level0 col208">208</th>
+								  <th class="col_heading level0 col209">209</th>
+								  <th class="col_heading level0 col210">210</th>
+								  <th class="col_heading level0 col211">211</th>
+								  <th class="col_heading level0 col212">212</th>
+								  <th class="col_heading level0 col213">213</th>
+								  <th class="col_heading level0 col214">214</th>
+								  <th class="col_heading level0 col215">215</th>
+								  <th class="col_heading level0 col216">216</th>
+								  <th class="col_heading level0 col217">217</th>
+								  <th class="col_heading level0 col218">218</th>
+								  <th class="col_heading level0 col219">219</th>
+								  <th class="col_heading level0 col220">220</th>
+								  <th class="col_heading level0 col221">221</th>
+								  <th class="col_heading level0 col222">222</th>
+								  <th class="col_heading level0 col223">223</th>
+								  <th class="col_heading level0 col224">224</th>
+								  <th class="col_heading level0 col225">225</th>
+								  <th class="col_heading level0 col226">226</th>
+								  <th class="col_heading level0 col227">227</th>
+								  <th class="col_heading level0 col228">228</th>
+								  <th class="col_heading level0 col229">229</th>
+								  <th class="col_heading level0 col230">230</th>
+								  <th class="col_heading level0 col231">231</th>
+								  <th class="col_heading level0 col232">232</th>
+								  <th class="col_heading level0 col233">233</th>
+								  <th class="col_heading level0 col234">234</th>
+								  <th class="col_heading level0 col235">235</th>
+								  <th class="col_heading level0 col236">236</th>
+								  <th class="col_heading level0 col237">237</th>
+								  <th class="col_heading level0 col238">238</th>
+								  <th class="col_heading level0 col239">239</th>
+								  <th class="col_heading level0 col240">240</th>
+								  <th class="col_heading level0 col241">241</th>
+								  <th class="col_heading level0 col242">242</th>
+								  <th class="col_heading level0 col243">243</th>
+								  <th class="col_heading level0 col244">244</th>
+								  <th class="col_heading level0 col245">245</th>
+								  <th class="col_heading level0 col246">246</th>
+								  <th class="col_heading level0 col247">247</th>
+								  <th class="col_heading level0 col248">248</th>
+								  <th class="col_heading level0 col249">249</th>
+								  <th class="col_heading level0 col250">250</th>
+								  <th class="col_heading level0 col251">251</th>
+								  <th class="col_heading level0 col252">252</th>
+								  <th class="col_heading level0 col253">253</th>
+								  <th class="col_heading level0 col254">254</th>
+								</tr>
+							  </thead>
+							  <tbody>
+								<tr>
+								  <th id="T_8794b_level0_row0" class="row_heading level0 row0">f</th>
+								  <td id="T_8794b_row0_col0" class="data row0 col0">2.747713</td>
+								  <td id="T_8794b_row0_col1" class="data row0 col1">2.466485</td>
+								  <td id="T_8794b_row0_col2" class="data row0 col2">2.065982</td>
+								  <td id="T_8794b_row0_col3" class="data row0 col3">4.491513</td>
+								  <td id="T_8794b_row0_col4" class="data row0 col4">2.328737</td>
+								  <td id="T_8794b_row0_col5" class="data row0 col5">2.828596</td>
+								  <td id="T_8794b_row0_col6" class="data row0 col6">1.379725</td>
+								  <td id="T_8794b_row0_col7" class="data row0 col7">2.680394</td>
+								  <td id="T_8794b_row0_col8" class="data row0 col8">3.017483</td>
+								  <td id="T_8794b_row0_col9" class="data row0 col9">3.083476</td>
+								  <td id="T_8794b_row0_col10" class="data row0 col10">2.950056</td>
+								  <td id="T_8794b_row0_col11" class="data row0 col11">5.236688</td>
+								  <td id="T_8794b_row0_col12" class="data row0 col12">5.736984</td>
+								  <td id="T_8794b_row0_col13" class="data row0 col13">2.306209</td>
+								  <td id="T_8794b_row0_col14" class="data row0 col14">5.641566</td>
+								  <td id="T_8794b_row0_col15" class="data row0 col15">6.021695</td>
+								  <td id="T_8794b_row0_col16" class="data row0 col16">7.645861</td>
+								  <td id="T_8794b_row0_col17" class="data row0 col17">7.631108</td>
+								  <td id="T_8794b_row0_col18" class="data row0 col18">5.945457</td>
+								  <td id="T_8794b_row0_col19" class="data row0 col19">6.854854</td>
+								  <td id="T_8794b_row0_col20" class="data row0 col20">10.968158</td>
+								  <td id="T_8794b_row0_col21" class="data row0 col21">10.150690</td>
+								  <td id="T_8794b_row0_col22" class="data row0 col22">10.142814</td>
+								  <td id="T_8794b_row0_col23" class="data row0 col23">9.466714</td>
+								  <td id="T_8794b_row0_col24" class="data row0 col24">2.192741</td>
+								  <td id="T_8794b_row0_col25" class="data row0 col25">8.555463</td>
+								  <td id="T_8794b_row0_col26" class="data row0 col26">6.464183</td>
+								  <td id="T_8794b_row0_col27" class="data row0 col27">1.410244</td>
+								  <td id="T_8794b_row0_col28" class="data row0 col28">3.706106</td>
+								  <td id="T_8794b_row0_col29" class="data row0 col29">8.471669</td>
+								  <td id="T_8794b_row0_col30" class="data row0 col30">13.759756</td>
+								  <td id="T_8794b_row0_col31" class="data row0 col31">14.040021</td>
+								  <td id="T_8794b_row0_col32" class="data row0 col32">11.579014</td>
+								  <td id="T_8794b_row0_col33" class="data row0 col33">10.098261</td>
+								  <td id="T_8794b_row0_col34" class="data row0 col34">16.652330</td>
+								  <td id="T_8794b_row0_col35" class="data row0 col35">17.868716</td>
+								  <td id="T_8794b_row0_col36" class="data row0 col36">18.112643</td>
+								  <td id="T_8794b_row0_col37" class="data row0 col37">7.541917</td>
+								  <td id="T_8794b_row0_col38" class="data row0 col38">14.534495</td>
+								  <td id="T_8794b_row0_col39" class="data row0 col39">5.563857</td>
+								  <td id="T_8794b_row0_col40" class="data row0 col40">11.705419</td>
+								  <td id="T_8794b_row0_col41" class="data row0 col41">11.288245</td>
+								  <td id="T_8794b_row0_col42" class="data row0 col42">9.861142</td>
+								  <td id="T_8794b_row0_col43" class="data row0 col43">9.279871</td>
+								  <td id="T_8794b_row0_col44" class="data row0 col44">7.768309</td>
+								  <td id="T_8794b_row0_col45" class="data row0 col45">6.052597</td>
+								  <td id="T_8794b_row0_col46" class="data row0 col46">6.354757</td>
+								  <td id="T_8794b_row0_col47" class="data row0 col47">8.709223</td>
+								  <td id="T_8794b_row0_col48" class="data row0 col48">7.178230</td>
+								  <td id="T_8794b_row0_col49" class="data row0 col49">7.195303</td>
+								  <td id="T_8794b_row0_col50" class="data row0 col50">4.000972</td>
+								  <td id="T_8794b_row0_col51" class="data row0 col51">4.174435</td>
+								  <td id="T_8794b_row0_col52" class="data row0 col52">4.622848</td>
+								  <td id="T_8794b_row0_col53" class="data row0 col53">6.934169</td>
+								  <td id="T_8794b_row0_col54" class="data row0 col54">6.821680</td>
+								  <td id="T_8794b_row0_col55" class="data row0 col55">7.610200</td>
+								  <td id="T_8794b_row0_col56" class="data row0 col56">8.427169</td>
+								  <td id="T_8794b_row0_col57" class="data row0 col57">8.727333</td>
+								  <td id="T_8794b_row0_col58" class="data row0 col58">7.799750</td>
+								  <td id="T_8794b_row0_col59" class="data row0 col59">8.927141</td>
+								  <td id="T_8794b_row0_col60" class="data row0 col60">9.525560</td>
+								  <td id="T_8794b_row0_col61" class="data row0 col61">7.517217</td>
+								  <td id="T_8794b_row0_col62" class="data row0 col62">7.706270</td>
+								  <td id="T_8794b_row0_col63" class="data row0 col63">11.112147</td>
+								  <td id="T_8794b_row0_col64" class="data row0 col64">11.380805</td>
+								  <td id="T_8794b_row0_col65" class="data row0 col65">12.242415</td>
+								  <td id="T_8794b_row0_col66" class="data row0 col66">14.544714</td>
+								  <td id="T_8794b_row0_col67" class="data row0 col67">14.275494</td>
+								  <td id="T_8794b_row0_col68" class="data row0 col68">14.581462</td>
+								  <td id="T_8794b_row0_col69" class="data row0 col69">15.688769</td>
+								  <td id="T_8794b_row0_col70" class="data row0 col70">14.304511</td>
+								  <td id="T_8794b_row0_col71" class="data row0 col71">12.998872</td>
+								  <td id="T_8794b_row0_col72" class="data row0 col72">13.406836</td>
+								  <td id="T_8794b_row0_col73" class="data row0 col73">13.397160</td>
+								  <td id="T_8794b_row0_col74" class="data row0 col74">13.486441</td>
+								  <td id="T_8794b_row0_col75" class="data row0 col75">14.670279</td>
+								  <td id="T_8794b_row0_col76" class="data row0 col76">15.924191</td>
+								  <td id="T_8794b_row0_col77" class="data row0 col77">16.324070</td>
+								  <td id="T_8794b_row0_col78" class="data row0 col78">17.117174</td>
+								  <td id="T_8794b_row0_col79" class="data row0 col79">16.428366</td>
+								  <td id="T_8794b_row0_col80" class="data row0 col80">16.929153</td>
+								  <td id="T_8794b_row0_col81" class="data row0 col81">16.042308</td>
+								  <td id="T_8794b_row0_col82" class="data row0 col82">15.360886</td>
+								  <td id="T_8794b_row0_col83" class="data row0 col83">15.296581</td>
+								  <td id="T_8794b_row0_col84" class="data row0 col84">15.732792</td>
+								  <td id="T_8794b_row0_col85" class="data row0 col85">15.242249</td>
+								  <td id="T_8794b_row0_col86" class="data row0 col86">12.882048</td>
+								  <td id="T_8794b_row0_col87" class="data row0 col87">11.207823</td>
+								  <td id="T_8794b_row0_col88" class="data row0 col88">11.422356</td>
+								  <td id="T_8794b_row0_col89" class="data row0 col89">11.421076</td>
+								  <td id="T_8794b_row0_col90" class="data row0 col90">9.228660</td>
+								  <td id="T_8794b_row0_col91" class="data row0 col91">10.012595</td>
+								  <td id="T_8794b_row0_col92" class="data row0 col92">7.835902</td>
+								  <td id="T_8794b_row0_col93" class="data row0 col93">8.316159</td>
+								  <td id="T_8794b_row0_col94" class="data row0 col94">7.013665</td>
+								  <td id="T_8794b_row0_col95" class="data row0 col95">6.318854</td>
+								  <td id="T_8794b_row0_col96" class="data row0 col96">6.995224</td>
+								  <td id="T_8794b_row0_col97" class="data row0 col97">6.027290</td>
+								  <td id="T_8794b_row0_col98" class="data row0 col98">4.434949</td>
+								  <td id="T_8794b_row0_col99" class="data row0 col99">3.171008</td>
+								  <td id="T_8794b_row0_col100" class="data row0 col100">3.005773</td>
+								  <td id="T_8794b_row0_col101" class="data row0 col101">3.541274</td>
+								  <td id="T_8794b_row0_col102" class="data row0 col102">4.423039</td>
+								  <td id="T_8794b_row0_col103" class="data row0 col103">6.152209</td>
+								  <td id="T_8794b_row0_col104" class="data row0 col104">4.302453</td>
+								  <td id="T_8794b_row0_col105" class="data row0 col105">5.873829</td>
+								  <td id="T_8794b_row0_col106" class="data row0 col106">4.491336</td>
+								  <td id="T_8794b_row0_col107" class="data row0 col107">4.197731</td>
+								  <td id="T_8794b_row0_col108" class="data row0 col108">3.563298</td>
+								  <td id="T_8794b_row0_col109" class="data row0 col109">3.324633</td>
+								  <td id="T_8794b_row0_col110" class="data row0 col110">2.514414</td>
+								  <td id="T_8794b_row0_col111" class="data row0 col111">1.764618</td>
+								  <td id="T_8794b_row0_col112" class="data row0 col112">2.211048</td>
+								  <td id="T_8794b_row0_col113" class="data row0 col113">1.811425</td>
+								  <td id="T_8794b_row0_col114" class="data row0 col114">1.072999</td>
+								  <td id="T_8794b_row0_col115" class="data row0 col115">1.370099</td>
+								  <td id="T_8794b_row0_col116" class="data row0 col116">1.067754</td>
+								  <td id="T_8794b_row0_col117" class="data row0 col117">1.513820</td>
+								  <td id="T_8794b_row0_col118" class="data row0 col118">0.306662</td>
+								  <td id="T_8794b_row0_col119" class="data row0 col119">1.376663</td>
+								  <td id="T_8794b_row0_col120" class="data row0 col120">0.251901</td>
+								  <td id="T_8794b_row0_col121" class="data row0 col121">1.501365</td>
+								  <td id="T_8794b_row0_col122" class="data row0 col122">0.282918</td>
+								  <td id="T_8794b_row0_col123" class="data row0 col123">2.164144</td>
+								  <td id="T_8794b_row0_col124" class="data row0 col124">1.668151</td>
+								  <td id="T_8794b_row0_col125" class="data row0 col125">1.398448</td>
+								  <td id="T_8794b_row0_col126" class="data row0 col126">2.648966</td>
+								  <td id="T_8794b_row0_col127" class="data row0 col127">2.471033</td>
+								  <td id="T_8794b_row0_col128" class="data row0 col128">5.291080</td>
+								  <td id="T_8794b_row0_col129" class="data row0 col129">3.522657</td>
+								  <td id="T_8794b_row0_col130" class="data row0 col130">3.383263</td>
+								  <td id="T_8794b_row0_col131" class="data row0 col131">3.780381</td>
+								  <td id="T_8794b_row0_col132" class="data row0 col132">3.155001</td>
+								  <td id="T_8794b_row0_col133" class="data row0 col133">3.810273</td>
+								  <td id="T_8794b_row0_col134" class="data row0 col134">4.137036</td>
+								  <td id="T_8794b_row0_col135" class="data row0 col135">3.316404</td>
+								  <td id="T_8794b_row0_col136" class="data row0 col136">3.496228</td>
+								  <td id="T_8794b_row0_col137" class="data row0 col137">4.694440</td>
+								  <td id="T_8794b_row0_col138" class="data row0 col138">4.276038</td>
+								  <td id="T_8794b_row0_col139" class="data row0 col139">4.168036</td>
+								  <td id="T_8794b_row0_col140" class="data row0 col140">4.124898</td>
+								  <td id="T_8794b_row0_col141" class="data row0 col141">4.147673</td>
+								  <td id="T_8794b_row0_col142" class="data row0 col142">4.147238</td>
+								  <td id="T_8794b_row0_col143" class="data row0 col143">4.819213</td>
+								  <td id="T_8794b_row0_col144" class="data row0 col144">4.452285</td>
+								  <td id="T_8794b_row0_col145" class="data row0 col145">5.332385</td>
+								  <td id="T_8794b_row0_col146" class="data row0 col146">4.838180</td>
+								  <td id="T_8794b_row0_col147" class="data row0 col147">4.827264</td>
+								  <td id="T_8794b_row0_col148" class="data row0 col148">4.459594</td>
+								  <td id="T_8794b_row0_col149" class="data row0 col149">6.830610</td>
+								  <td id="T_8794b_row0_col150" class="data row0 col150">5.828930</td>
+								  <td id="T_8794b_row0_col151" class="data row0 col151">5.671214</td>
+								  <td id="T_8794b_row0_col152" class="data row0 col152">6.599741</td>
+								  <td id="T_8794b_row0_col153" class="data row0 col153">6.364601</td>
+								  <td id="T_8794b_row0_col154" class="data row0 col154">6.938106</td>
+								  <td id="T_8794b_row0_col155" class="data row0 col155">7.891603</td>
+								  <td id="T_8794b_row0_col156" class="data row0 col156">7.408977</td>
+								  <td id="T_8794b_row0_col157" class="data row0 col157">7.813315</td>
+								  <td id="T_8794b_row0_col158" class="data row0 col158">8.842964</td>
+								  <td id="T_8794b_row0_col159" class="data row0 col159">9.338545</td>
+								  <td id="T_8794b_row0_col160" class="data row0 col160">10.112800</td>
+								  <td id="T_8794b_row0_col161" class="data row0 col161">10.898262</td>
+								  <td id="T_8794b_row0_col162" class="data row0 col162">11.555793</td>
+								  <td id="T_8794b_row0_col163" class="data row0 col163">12.144834</td>
+								  <td id="T_8794b_row0_col164" class="data row0 col164">12.579774</td>
+								  <td id="T_8794b_row0_col165" class="data row0 col165">12.995491</td>
+								  <td id="T_8794b_row0_col166" class="data row0 col166">13.408029</td>
+								  <td id="T_8794b_row0_col167" class="data row0 col167">13.762951</td>
+								  <td id="T_8794b_row0_col168" class="data row0 col168">13.352950</td>
+								  <td id="T_8794b_row0_col169" class="data row0 col169">13.776217</td>
+								  <td id="T_8794b_row0_col170" class="data row0 col170">14.266651</td>
+								  <td id="T_8794b_row0_col171" class="data row0 col171">13.913973</td>
+								  <td id="T_8794b_row0_col172" class="data row0 col172">13.877029</td>
+								  <td id="T_8794b_row0_col173" class="data row0 col173">14.524002</td>
+								  <td id="T_8794b_row0_col174" class="data row0 col174">16.175518</td>
+								  <td id="T_8794b_row0_col175" class="data row0 col175">15.760850</td>
+								  <td id="T_8794b_row0_col176" class="data row0 col176">17.372781</td>
+								  <td id="T_8794b_row0_col177" class="data row0 col177">16.571655</td>
+								  <td id="T_8794b_row0_col178" class="data row0 col178">16.033418</td>
+								  <td id="T_8794b_row0_col179" class="data row0 col179">18.875462</td>
+								  <td id="T_8794b_row0_col180" class="data row0 col180">17.408942</td>
+								  <td id="T_8794b_row0_col181" class="data row0 col181">17.680340</td>
+								  <td id="T_8794b_row0_col182" class="data row0 col182">18.016598</td>
+								  <td id="T_8794b_row0_col183" class="data row0 col183">18.609318</td>
+								  <td id="T_8794b_row0_col184" class="data row0 col184">18.047349</td>
+								  <td id="T_8794b_row0_col185" class="data row0 col185">17.140176</td>
+								  <td id="T_8794b_row0_col186" class="data row0 col186">17.388056</td>
+								  <td id="T_8794b_row0_col187" class="data row0 col187">17.258469</td>
+								  <td id="T_8794b_row0_col188" class="data row0 col188">16.626067</td>
+								  <td id="T_8794b_row0_col189" class="data row0 col189">15.781191</td>
+								  <td id="T_8794b_row0_col190" class="data row0 col190">14.170840</td>
+								  <td id="T_8794b_row0_col191" class="data row0 col191">12.774900</td>
+								  <td id="T_8794b_row0_col192" class="data row0 col192">11.966094</td>
+								  <td id="T_8794b_row0_col193" class="data row0 col193">10.702482</td>
+								  <td id="T_8794b_row0_col194" class="data row0 col194">10.364570</td>
+								  <td id="T_8794b_row0_col195" class="data row0 col195">10.734221</td>
+								  <td id="T_8794b_row0_col196" class="data row0 col196">9.342584</td>
+								  <td id="T_8794b_row0_col197" class="data row0 col197">8.453744</td>
+								  <td id="T_8794b_row0_col198" class="data row0 col198">7.196299</td>
+								  <td id="T_8794b_row0_col199" class="data row0 col199">7.855809</td>
+								  <td id="T_8794b_row0_col200" class="data row0 col200">7.485964</td>
+								  <td id="T_8794b_row0_col201" class="data row0 col201">6.227222</td>
+								  <td id="T_8794b_row0_col202" class="data row0 col202">6.179201</td>
+								  <td id="T_8794b_row0_col203" class="data row0 col203">7.208668</td>
+								  <td id="T_8794b_row0_col204" class="data row0 col204">7.251993</td>
+								  <td id="T_8794b_row0_col205" class="data row0 col205">8.018687</td>
+								  <td id="T_8794b_row0_col206" class="data row0 col206">7.548809</td>
+								  <td id="T_8794b_row0_col207" class="data row0 col207">7.011172</td>
+								  <td id="T_8794b_row0_col208" class="data row0 col208">9.395510</td>
+								  <td id="T_8794b_row0_col209" class="data row0 col209">6.224153</td>
+								  <td id="T_8794b_row0_col210" class="data row0 col210">8.056408</td>
+								  <td id="T_8794b_row0_col211" class="data row0 col211">8.228929</td>
+								  <td id="T_8794b_row0_col212" class="data row0 col212">9.833549</td>
+								  <td id="T_8794b_row0_col213" class="data row0 col213">9.072903</td>
+								  <td id="T_8794b_row0_col214" class="data row0 col214">9.897532</td>
+								  <td id="T_8794b_row0_col215" class="data row0 col215">9.883434</td>
+								  <td id="T_8794b_row0_col216" class="data row0 col216">10.314168</td>
+								  <td id="T_8794b_row0_col217" class="data row0 col217">10.183746</td>
+								  <td id="T_8794b_row0_col218" class="data row0 col218">10.522250</td>
+								  <td id="T_8794b_row0_col219" class="data row0 col219">10.129008</td>
+								  <td id="T_8794b_row0_col220" class="data row0 col220">10.234111</td>
+								  <td id="T_8794b_row0_col221" class="data row0 col221">9.403097</td>
+								  <td id="T_8794b_row0_col222" class="data row0 col222">8.308866</td>
+								  <td id="T_8794b_row0_col223" class="data row0 col223">7.737684</td>
+								  <td id="T_8794b_row0_col224" class="data row0 col224">7.616413</td>
+								  <td id="T_8794b_row0_col225" class="data row0 col225">6.599495</td>
+								  <td id="T_8794b_row0_col226" class="data row0 col226">7.113125</td>
+								  <td id="T_8794b_row0_col227" class="data row0 col227">7.127457</td>
+								  <td id="T_8794b_row0_col228" class="data row0 col228">7.192184</td>
+								  <td id="T_8794b_row0_col229" class="data row0 col229">7.384406</td>
+								  <td id="T_8794b_row0_col230" class="data row0 col230">6.558484</td>
+								  <td id="T_8794b_row0_col231" class="data row0 col231">6.172910</td>
+								  <td id="T_8794b_row0_col232" class="data row0 col232">5.350330</td>
+								  <td id="T_8794b_row0_col233" class="data row0 col233">4.394474</td>
+								  <td id="T_8794b_row0_col234" class="data row0 col234">4.050166</td>
+								  <td id="T_8794b_row0_col235" class="data row0 col235">3.719858</td>
+								  <td id="T_8794b_row0_col236" class="data row0 col236">3.239715</td>
+								  <td id="T_8794b_row0_col237" class="data row0 col237">2.665217</td>
+								  <td id="T_8794b_row0_col238" class="data row0 col238">2.650654</td>
+								  <td id="T_8794b_row0_col239" class="data row0 col239">1.977718</td>
+								  <td id="T_8794b_row0_col240" class="data row0 col240">2.123116</td>
+								  <td id="T_8794b_row0_col241" class="data row0 col241">1.819487</td>
+								  <td id="T_8794b_row0_col242" class="data row0 col242">1.775547</td>
+								  <td id="T_8794b_row0_col243" class="data row0 col243">1.904821</td>
+								  <td id="T_8794b_row0_col244" class="data row0 col244">2.314060</td>
+								  <td id="T_8794b_row0_col245" class="data row0 col245">2.601619</td>
+								  <td id="T_8794b_row0_col246" class="data row0 col246">2.442919</td>
+								  <td id="T_8794b_row0_col247" class="data row0 col247">2.238985</td>
+								  <td id="T_8794b_row0_col248" class="data row0 col248">2.079581</td>
+								  <td id="T_8794b_row0_col249" class="data row0 col249">1.815118</td>
+								  <td id="T_8794b_row0_col250" class="data row0 col250">1.358697</td>
+								  <td id="T_8794b_row0_col251" class="data row0 col251">2.182883</td>
+								  <td id="T_8794b_row0_col252" class="data row0 col252">3.743170</td>
+								  <td id="T_8794b_row0_col253" class="data row0 col253">24.319968</td>
+								  <td id="T_8794b_row0_col254" class="data row0 col254">2.013715</td>
+								</tr>
+								<tr>
+								  <th id="T_8794b_level0_row1" class="row_heading level0 row1">p</th>
+								  <td id="T_8794b_row1_col0" class="data row1 col0">0.041367</td>
+								  <td id="T_8794b_row1_col1" class="data row1 col1">0.060338</td>
+								  <td id="T_8794b_row1_col2" class="data row1 col2">0.102525</td>
+								  <td id="T_8794b_row1_col3" class="data row1 col3">0.003747</td>
+								  <td id="T_8794b_row1_col4" class="data row1 col4">0.072485</td>
+								  <td id="T_8794b_row1_col5" class="data row1 col5">0.037086</td>
+								  <td id="T_8794b_row1_col6" class="data row1 col6">0.246968</td>
+								  <td id="T_8794b_row1_col7" class="data row1 col7">0.045294</td>
+								  <td id="T_8794b_row1_col8" class="data row1 col8">0.028705</td>
+								  <td id="T_8794b_row1_col9" class="data row1 col9">0.026239</td>
+								  <td id="T_8794b_row1_col10" class="data row1 col10">0.031459</td>
+								  <td id="T_8794b_row1_col11" class="data row1 col11">0.001316</td>
+								  <td id="T_8794b_row1_col12" class="data row1 col12">0.000649</td>
+								  <td id="T_8794b_row1_col13" class="data row1 col13">0.074685</td>
+								  <td id="T_8794b_row1_col14" class="data row1 col14">0.000743</td>
+								  <td id="T_8794b_row1_col15" class="data row1 col15">0.000433</td>
+								  <td id="T_8794b_row1_col16" class="data row1 col16">0.000043</td>
+								  <td id="T_8794b_row1_col17" class="data row1 col17">0.000044</td>
+								  <td id="T_8794b_row1_col18" class="data row1 col18">0.000483</td>
+								  <td id="T_8794b_row1_col19" class="data row1 col19">0.000132</td>
+								  <td id="T_8794b_row1_col20" class="data row1 col20">0.000000</td>
+								  <td id="T_8794b_row1_col21" class="data row1 col21">0.000001</td>
+								  <td id="T_8794b_row1_col22" class="data row1 col22">0.000001</td>
+								  <td id="T_8794b_row1_col23" class="data row1 col23">0.000003</td>
+								  <td id="T_8794b_row1_col24" class="data row1 col24">0.086781</td>
+								  <td id="T_8794b_row1_col25" class="data row1 col25">0.000012</td>
+								  <td id="T_8794b_row1_col26" class="data row1 col26">0.000231</td>
+								  <td id="T_8794b_row1_col27" class="data row1 col27">0.237751</td>
+								  <td id="T_8794b_row1_col28" class="data row1 col28">0.011166</td>
+								  <td id="T_8794b_row1_col29" class="data row1 col29">0.000013</td>
+								  <td id="T_8794b_row1_col30" class="data row1 col30">0.000000</td>
+								  <td id="T_8794b_row1_col31" class="data row1 col31">0.000000</td>
+								  <td id="T_8794b_row1_col32" class="data row1 col32">0.000000</td>
+								  <td id="T_8794b_row1_col33" class="data row1 col33">0.000001</td>
+								  <td id="T_8794b_row1_col34" class="data row1 col34">0.000000</td>
+								  <td id="T_8794b_row1_col35" class="data row1 col35">0.000000</td>
+								  <td id="T_8794b_row1_col36" class="data row1 col36">0.000000</td>
+								  <td id="T_8794b_row1_col37" class="data row1 col37">0.000050</td>
+								  <td id="T_8794b_row1_col38" class="data row1 col38">0.000000</td>
+								  <td id="T_8794b_row1_col39" class="data row1 col39">0.000829</td>
+								  <td id="T_8794b_row1_col40" class="data row1 col40">0.000000</td>
+								  <td id="T_8794b_row1_col41" class="data row1 col41">0.000000</td>
+								  <td id="T_8794b_row1_col42" class="data row1 col42">0.000002</td>
+								  <td id="T_8794b_row1_col43" class="data row1 col43">0.000004</td>
+								  <td id="T_8794b_row1_col44" class="data row1 col44">0.000036</td>
+								  <td id="T_8794b_row1_col45" class="data row1 col45">0.000415</td>
+								  <td id="T_8794b_row1_col46" class="data row1 col46">0.000270</td>
+								  <td id="T_8794b_row1_col47" class="data row1 col47">0.000009</td>
+								  <td id="T_8794b_row1_col48" class="data row1 col48">0.000083</td>
+								  <td id="T_8794b_row1_col49" class="data row1 col49">0.000081</td>
+								  <td id="T_8794b_row1_col50" class="data row1 col50">0.007423</td>
+								  <td id="T_8794b_row1_col51" class="data row1 col51">0.005832</td>
+								  <td id="T_8794b_row1_col52" class="data row1 col52">0.003118</td>
+								  <td id="T_8794b_row1_col53" class="data row1 col53">0.000118</td>
+								  <td id="T_8794b_row1_col54" class="data row1 col54">0.000139</td>
+								  <td id="T_8794b_row1_col55" class="data row1 col55">0.000045</td>
+								  <td id="T_8794b_row1_col56" class="data row1 col56">0.000014</td>
+								  <td id="T_8794b_row1_col57" class="data row1 col57">0.000009</td>
+								  <td id="T_8794b_row1_col58" class="data row1 col58">0.000034</td>
+								  <td id="T_8794b_row1_col59" class="data row1 col59">0.000007</td>
+								  <td id="T_8794b_row1_col60" class="data row1 col60">0.000003</td>
+								  <td id="T_8794b_row1_col61" class="data row1 col61">0.000051</td>
+								  <td id="T_8794b_row1_col62" class="data row1 col62">0.000039</td>
+								  <td id="T_8794b_row1_col63" class="data row1 col63">0.000000</td>
+								  <td id="T_8794b_row1_col64" class="data row1 col64">0.000000</td>
+								  <td id="T_8794b_row1_col65" class="data row1 col65">0.000000</td>
+								  <td id="T_8794b_row1_col66" class="data row1 col66">0.000000</td>
+								  <td id="T_8794b_row1_col67" class="data row1 col67">0.000000</td>
+								  <td id="T_8794b_row1_col68" class="data row1 col68">0.000000</td>
+								  <td id="T_8794b_row1_col69" class="data row1 col69">0.000000</td>
+								  <td id="T_8794b_row1_col70" class="data row1 col70">0.000000</td>
+								  <td id="T_8794b_row1_col71" class="data row1 col71">0.000000</td>
+								  <td id="T_8794b_row1_col72" class="data row1 col72">0.000000</td>
+								  <td id="T_8794b_row1_col73" class="data row1 col73">0.000000</td>
+								  <td id="T_8794b_row1_col74" class="data row1 col74">0.000000</td>
+								  <td id="T_8794b_row1_col75" class="data row1 col75">0.000000</td>
+								  <td id="T_8794b_row1_col76" class="data row1 col76">0.000000</td>
+								  <td id="T_8794b_row1_col77" class="data row1 col77">0.000000</td>
+								  <td id="T_8794b_row1_col78" class="data row1 col78">0.000000</td>
+								  <td id="T_8794b_row1_col79" class="data row1 col79">0.000000</td>
+								  <td id="T_8794b_row1_col80" class="data row1 col80">0.000000</td>
+								  <td id="T_8794b_row1_col81" class="data row1 col81">0.000000</td>
+								  <td id="T_8794b_row1_col82" class="data row1 col82">0.000000</td>
+								  <td id="T_8794b_row1_col83" class="data row1 col83">0.000000</td>
+								  <td id="T_8794b_row1_col84" class="data row1 col84">0.000000</td>
+								  <td id="T_8794b_row1_col85" class="data row1 col85">0.000000</td>
+								  <td id="T_8794b_row1_col86" class="data row1 col86">0.000000</td>
+								  <td id="T_8794b_row1_col87" class="data row1 col87">0.000000</td>
+								  <td id="T_8794b_row1_col88" class="data row1 col88">0.000000</td>
+								  <td id="T_8794b_row1_col89" class="data row1 col89">0.000000</td>
+								  <td id="T_8794b_row1_col90" class="data row1 col90">0.000004</td>
+								  <td id="T_8794b_row1_col91" class="data row1 col91">0.000001</td>
+								  <td id="T_8794b_row1_col92" class="data row1 col92">0.000033</td>
+								  <td id="T_8794b_row1_col93" class="data row1 col93">0.000016</td>
+								  <td id="T_8794b_row1_col94" class="data row1 col94">0.000106</td>
+								  <td id="T_8794b_row1_col95" class="data row1 col95">0.000284</td>
+								  <td id="T_8794b_row1_col96" class="data row1 col96">0.000108</td>
+								  <td id="T_8794b_row1_col97" class="data row1 col97">0.000430</td>
+								  <td id="T_8794b_row1_col98" class="data row1 col98">0.004055</td>
+								  <td id="T_8794b_row1_col99" class="data row1 col99">0.023287</td>
+								  <td id="T_8794b_row1_col100" class="data row1 col100">0.029166</td>
+								  <td id="T_8794b_row1_col101" class="data row1 col101">0.014016</td>
+								  <td id="T_8794b_row1_col102" class="data row1 col102">0.004123</td>
+								  <td id="T_8794b_row1_col103" class="data row1 col103">0.000360</td>
+								  <td id="T_8794b_row1_col104" class="data row1 col104">0.004879</td>
+								  <td id="T_8794b_row1_col105" class="data row1 col105">0.000534</td>
+								  <td id="T_8794b_row1_col106" class="data row1 col106">0.003748</td>
+								  <td id="T_8794b_row1_col107" class="data row1 col107">0.005646</td>
+								  <td id="T_8794b_row1_col108" class="data row1 col108">0.013597</td>
+								  <td id="T_8794b_row1_col109" class="data row1 col109">0.018874</td>
+								  <td id="T_8794b_row1_col110" class="data row1 col110">0.056594</td>
+								  <td id="T_8794b_row1_col111" class="data row1 col111">0.151663</td>
+								  <td id="T_8794b_row1_col112" class="data row1 col112">0.084709</td>
+								  <td id="T_8794b_row1_col113" class="data row1 col113">0.142785</td>
+								  <td id="T_8794b_row1_col114" class="data row1 col114">0.359189</td>
+								  <td id="T_8794b_row1_col115" class="data row1 col115">0.249943</td>
+								  <td id="T_8794b_row1_col116" class="data row1 col116">0.361446</td>
+								  <td id="T_8794b_row1_col117" class="data row1 col117">0.208776</td>
+								  <td id="T_8794b_row1_col118" class="data row1 col118">0.820600</td>
+								  <td id="T_8794b_row1_col119" class="data row1 col119">0.247911</td>
+								  <td id="T_8794b_row1_col120" class="data row1 col120">0.860025</td>
+								  <td id="T_8794b_row1_col121" class="data row1 col121">0.212079</td>
+								  <td id="T_8794b_row1_col122" class="data row1 col122">0.837770</td>
+								  <td id="T_8794b_row1_col123" class="data row1 col123">0.090116</td>
+								  <td id="T_8794b_row1_col124" class="data row1 col124">0.171632</td>
+								  <td id="T_8794b_row1_col125" class="data row1 col125">0.241276</td>
+								  <td id="T_8794b_row1_col126" class="data row1 col126">0.047250</td>
+								  <td id="T_8794b_row1_col127" class="data row1 col127">0.059973</td>
+								  <td id="T_8794b_row1_col128" class="data row1 col128">0.001219</td>
+								  <td id="T_8794b_row1_col129" class="data row1 col129">0.014380</td>
+								  <td id="T_8794b_row1_col130" class="data row1 col130">0.017416</td>
+								  <td id="T_8794b_row1_col131" class="data row1 col131">0.010077</td>
+								  <td id="T_8794b_row1_col132" class="data row1 col132">0.023801</td>
+								  <td id="T_8794b_row1_col133" class="data row1 col133">0.009669</td>
+								  <td id="T_8794b_row1_col134" class="data row1 col134">0.006144</td>
+								  <td id="T_8794b_row1_col135" class="data row1 col135">0.019088</td>
+								  <td id="T_8794b_row1_col136" class="data row1 col136">0.014912</td>
+								  <td id="T_8794b_row1_col137" class="data row1 col137">0.002820</td>
+								  <td id="T_8794b_row1_col138" class="data row1 col138">0.005062</td>
+								  <td id="T_8794b_row1_col139" class="data row1 col139">0.005884</td>
+								  <td id="T_8794b_row1_col140" class="data row1 col140">0.006248</td>
+								  <td id="T_8794b_row1_col141" class="data row1 col141">0.006053</td>
+								  <td id="T_8794b_row1_col142" class="data row1 col142">0.006057</td>
+								  <td id="T_8794b_row1_col143" class="data row1 col143">0.002368</td>
+								  <td id="T_8794b_row1_col144" class="data row1 col144">0.003958</td>
+								  <td id="T_8794b_row1_col145" class="data row1 col145">0.001150</td>
+								  <td id="T_8794b_row1_col146" class="data row1 col146">0.002305</td>
+								  <td id="T_8794b_row1_col147" class="data row1 col147">0.002341</td>
+								  <td id="T_8794b_row1_col148" class="data row1 col148">0.003918</td>
+								  <td id="T_8794b_row1_col149" class="data row1 col149">0.000137</td>
+								  <td id="T_8794b_row1_col150" class="data row1 col150">0.000570</td>
+								  <td id="T_8794b_row1_col151" class="data row1 col151">0.000712</td>
+								  <td id="T_8794b_row1_col152" class="data row1 col152">0.000190</td>
+								  <td id="T_8794b_row1_col153" class="data row1 col153">0.000266</td>
+								  <td id="T_8794b_row1_col154" class="data row1 col154">0.000118</td>
+								  <td id="T_8794b_row1_col155" class="data row1 col155">0.000030</td>
+								  <td id="T_8794b_row1_col156" class="data row1 col156">0.000060</td>
+								  <td id="T_8794b_row1_col157" class="data row1 col157">0.000034</td>
+								  <td id="T_8794b_row1_col158" class="data row1 col158">0.000008</td>
+								  <td id="T_8794b_row1_col159" class="data row1 col159">0.000004</td>
+								  <td id="T_8794b_row1_col160" class="data row1 col160">0.000001</td>
+								  <td id="T_8794b_row1_col161" class="data row1 col161">0.000000</td>
+								  <td id="T_8794b_row1_col162" class="data row1 col162">0.000000</td>
+								  <td id="T_8794b_row1_col163" class="data row1 col163">0.000000</td>
+								  <td id="T_8794b_row1_col164" class="data row1 col164">0.000000</td>
+								  <td id="T_8794b_row1_col165" class="data row1 col165">0.000000</td>
+								  <td id="T_8794b_row1_col166" class="data row1 col166">0.000000</td>
+								  <td id="T_8794b_row1_col167" class="data row1 col167">0.000000</td>
+								  <td id="T_8794b_row1_col168" class="data row1 col168">0.000000</td>
+								  <td id="T_8794b_row1_col169" class="data row1 col169">0.000000</td>
+								  <td id="T_8794b_row1_col170" class="data row1 col170">0.000000</td>
+								  <td id="T_8794b_row1_col171" class="data row1 col171">0.000000</td>
+								  <td id="T_8794b_row1_col172" class="data row1 col172">0.000000</td>
+								  <td id="T_8794b_row1_col173" class="data row1 col173">0.000000</td>
+								  <td id="T_8794b_row1_col174" class="data row1 col174">0.000000</td>
+								  <td id="T_8794b_row1_col175" class="data row1 col175">0.000000</td>
+								  <td id="T_8794b_row1_col176" class="data row1 col176">0.000000</td>
+								  <td id="T_8794b_row1_col177" class="data row1 col177">0.000000</td>
+								  <td id="T_8794b_row1_col178" class="data row1 col178">0.000000</td>
+								  <td id="T_8794b_row1_col179" class="data row1 col179">0.000000</td>
+								  <td id="T_8794b_row1_col180" class="data row1 col180">0.000000</td>
+								  <td id="T_8794b_row1_col181" class="data row1 col181">0.000000</td>
+								  <td id="T_8794b_row1_col182" class="data row1 col182">0.000000</td>
+								  <td id="T_8794b_row1_col183" class="data row1 col183">0.000000</td>
+								  <td id="T_8794b_row1_col184" class="data row1 col184">0.000000</td>
+								  <td id="T_8794b_row1_col185" class="data row1 col185">0.000000</td>
+								  <td id="T_8794b_row1_col186" class="data row1 col186">0.000000</td>
+								  <td id="T_8794b_row1_col187" class="data row1 col187">0.000000</td>
+								  <td id="T_8794b_row1_col188" class="data row1 col188">0.000000</td>
+								  <td id="T_8794b_row1_col189" class="data row1 col189">0.000000</td>
+								  <td id="T_8794b_row1_col190" class="data row1 col190">0.000000</td>
+								  <td id="T_8794b_row1_col191" class="data row1 col191">0.000000</td>
+								  <td id="T_8794b_row1_col192" class="data row1 col192">0.000000</td>
+								  <td id="T_8794b_row1_col193" class="data row1 col193">0.000001</td>
+								  <td id="T_8794b_row1_col194" class="data row1 col194">0.000001</td>
+								  <td id="T_8794b_row1_col195" class="data row1 col195">0.000001</td>
+								  <td id="T_8794b_row1_col196" class="data row1 col196">0.000004</td>
+								  <td id="T_8794b_row1_col197" class="data row1 col197">0.000013</td>
+								  <td id="T_8794b_row1_col198" class="data row1 col198">0.000081</td>
+								  <td id="T_8794b_row1_col199" class="data row1 col199">0.000032</td>
+								  <td id="T_8794b_row1_col200" class="data row1 col200">0.000054</td>
+								  <td id="T_8794b_row1_col201" class="data row1 col201">0.000324</td>
+								  <td id="T_8794b_row1_col202" class="data row1 col202">0.000346</td>
+								  <td id="T_8794b_row1_col203" class="data row1 col203">0.000080</td>
+								  <td id="T_8794b_row1_col204" class="data row1 col204">0.000075</td>
+								  <td id="T_8794b_row1_col205" class="data row1 col205">0.000025</td>
+								  <td id="T_8794b_row1_col206" class="data row1 col206">0.000049</td>
+								  <td id="T_8794b_row1_col207" class="data row1 col207">0.000106</td>
+								  <td id="T_8794b_row1_col208" class="data row1 col208">0.000003</td>
+								  <td id="T_8794b_row1_col209" class="data row1 col209">0.000325</td>
+								  <td id="T_8794b_row1_col210" class="data row1 col210">0.000024</td>
+								  <td id="T_8794b_row1_col211" class="data row1 col211">0.000019</td>
+								  <td id="T_8794b_row1_col212" class="data row1 col212">0.000002</td>
+								  <td id="T_8794b_row1_col213" class="data row1 col213">0.000006</td>
+								  <td id="T_8794b_row1_col214" class="data row1 col214">0.000002</td>
+								  <td id="T_8794b_row1_col215" class="data row1 col215">0.000002</td>
+								  <td id="T_8794b_row1_col216" class="data row1 col216">0.000001</td>
+								  <td id="T_8794b_row1_col217" class="data row1 col217">0.000001</td>
+								  <td id="T_8794b_row1_col218" class="data row1 col218">0.000001</td>
+								  <td id="T_8794b_row1_col219" class="data row1 col219">0.000001</td>
+								  <td id="T_8794b_row1_col220" class="data row1 col220">0.000001</td>
+								  <td id="T_8794b_row1_col221" class="data row1 col221">0.000003</td>
+								  <td id="T_8794b_row1_col222" class="data row1 col222">0.000017</td>
+								  <td id="T_8794b_row1_col223" class="data row1 col223">0.000037</td>
+								  <td id="T_8794b_row1_col224" class="data row1 col224">0.000045</td>
+								  <td id="T_8794b_row1_col225" class="data row1 col225">0.000191</td>
+								  <td id="T_8794b_row1_col226" class="data row1 col226">0.000092</td>
+								  <td id="T_8794b_row1_col227" class="data row1 col227">0.000090</td>
+								  <td id="T_8794b_row1_col228" class="data row1 col228">0.000082</td>
+								  <td id="T_8794b_row1_col229" class="data row1 col229">0.000062</td>
+								  <td id="T_8794b_row1_col230" class="data row1 col230">0.000202</td>
+								  <td id="T_8794b_row1_col231" class="data row1 col231">0.000350</td>
+								  <td id="T_8794b_row1_col232" class="data row1 col232">0.001121</td>
+								  <td id="T_8794b_row1_col233" class="data row1 col233">0.004291</td>
+								  <td id="T_8794b_row1_col234" class="data row1 col234">0.006932</td>
+								  <td id="T_8794b_row1_col235" class="data row1 col235">0.010956</td>
+								  <td id="T_8794b_row1_col236" class="data row1 col236">0.021200</td>
+								  <td id="T_8794b_row1_col237" class="data row1 col237">0.046228</td>
+								  <td id="T_8794b_row1_col238" class="data row1 col238">0.047143</td>
+								  <td id="T_8794b_row1_col239" class="data row1 col239">0.115068</td>
+								  <td id="T_8794b_row1_col240" class="data row1 col240">0.095116</td>
+								  <td id="T_8794b_row1_col241" class="data row1 col241">0.141306</td>
+								  <td id="T_8794b_row1_col242" class="data row1 col242">0.149545</td>
+								  <td id="T_8794b_row1_col243" class="data row1 col243">0.126521</td>
+								  <td id="T_8794b_row1_col244" class="data row1 col244">0.073911</td>
+								  <td id="T_8794b_row1_col245" class="data row1 col245">0.050353</td>
+								  <td id="T_8794b_row1_col246" class="data row1 col246">0.062266</td>
+								  <td id="T_8794b_row1_col247" class="data row1 col247">0.081639</td>
+								  <td id="T_8794b_row1_col248" class="data row1 col248">0.100713</td>
+								  <td id="T_8794b_row1_col249" class="data row1 col249">0.142106</td>
+								  <td id="T_8794b_row1_col250" class="data row1 col250">0.253508</td>
+								  <td id="T_8794b_row1_col251" class="data row1 col251">0.087917</td>
+								  <td id="T_8794b_row1_col252" class="data row1 col252">0.010609</td>
+								  <td id="T_8794b_row1_col253" class="data row1 col253">0.000000</td>
+								  <td id="T_8794b_row1_col254" class="data row1 col254">0.109785</td>
+								</tr>
+							  </tbody>
+							</table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<div class="row">
+					<div class="col s12 m7">
+						<label class="label-header">Age by Race</label>
+                        <div class="card">
+                            <div class="card-container" id="summary-stats-race-age">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m5">
+						<label class="label-header">Sex by Race</label>
+                        <div class="card">
+                            <div class="card-container" id="summary-stats-race-gender">
+                            </div>
+                        </div>
+                    </div>
+					
+                </div>
+
+            </div>
+        </div>
+        <script>
+
+            $(document).ready(function () {
+                $('select').formSelect();
+
+                plotGraphs();
+            });
+
+            function plotGraphs() {
+				// console.log("plotGraphs");
+                drawSummaryLineChart2('#summary-line-chart');
+				drawLineChart('#line-chart');
+				drawXR('#image');
+
+//temp turning this off
+//                drawGroupedBoxPlot('#box-plot');
+
+				drawSummaryRaceGender("#summary-stats-race-gender");
+				drawSummaryRaceAge("#summary-stats-race-age");
+            }
+
+            $("#filter-btn").click(function () {
+                plotGraphs();
+            });
+
+
+			function drawSummaryRaceAge(elem){
+				var dataset = d3.csv("data/frequencies_for_viz.csv", (data) => {
+					var grouped_data = d3.nest()
+					.key(function(d) { return d.Race; })
+					.key(function(d){
+					var ageGroup = null;
+					if (d.Age <= 20){
+						ageGroup = '0-20';
+					} else if (d.Age > 20 && d.Age <= 40 ){
+						ageGroup = '20-40';
+					} else if (d.Age > 40 && d.Age <= 60 ){
+						ageGroup = '40-60';
+					} else if (d.Age > 60 && d.Age <= 80 ){
+						ageGroup = '60-80';
+					} else if (d.Age > 80 && d.Age <= 100 ){
+						ageGroup = '80-100';
+					} else if (d.Age > 100){
+						ageGroup = '100+';
+					}
+
+
+					// if (d.Age <= 10){
+					// 	ageGroup = '0-10';
+					// } else if (d.Age > 10 && d.Age <= 20 ){
+					// 	ageGroup = '10-20';
+					// } else if (d.Age > 20 && d.Age <= 30 ){
+					// 	ageGroup = '20-30';
+					// } else if (d.Age > 30 && d.Age <= 40 ){
+					// 	ageGroup = '30-40';
+					// } else if (d.Age > 40 && d.Age <= 50 ){
+					// 	ageGroup = '40-50';
+					// } else if (d.Age > 50 && d.Age <= 60 ){
+					// 	ageGroup = '50-60';
+					// } else if (d.Age > 60 && d.Age <= 70 ){
+					// 	ageGroup = '60-70';
+					// } else if (d.Age > 70 && d.Age <= 80 ){
+					// 	ageGroup = '70-80';
+					// } else if (d.Age > 80 && d.Age <= 90 ){
+					// 	ageGroup = '80-90';
+					// } else if (d.Age > 90 && d.Age <= 100 ){
+					// 	ageGroup = '90-100';
+					// } else if (d.Age > 100){
+					// 	ageGroup = '100+';
+					// }
+					
+					return ageGroup;
+					})
+					.entries(data);
+
+					var data_object = [];
+
+					for (var i = 0; i < grouped_data.length; i++) {
+						var key = ('' + grouped_data[i].key).toUpperCase();
+						var values = grouped_data[i].values;
+
+						var val_objects = [];
+						for (var j = 0; j < values.length; j++) {
+							
+							val_objects.push({
+								"value": values[j].values.length,
+								"rate": values[j].key
+							});
+						}
+
+						data_object.push({
+							"category": key,
+							"values": val_objects
+						});
+					}
+					
+
+					// console.log("GROUPED LENGTH", grouped_data);
+					// console.log("GROUPED 33", data_object);
+
+					var color = d3.scale.ordinal()
+					// .range(["#92c5de","#0571b0"]);
+					.range(["#ca0020","#f4a582","#d5d5d5","#92c5de","#0571b0"  ]);
+					// .range(["#cfdd01","#ca0020","#f4a582","#d5d5d5","#92c5de","#0571b0", "#06A77D", "#F1A208", "#4c1e42",  ]);
+
+					drawGroupedBarChart(elem, data_object, color, "Count of Race-Age");
+				});
+
+				
+			}
+			function drawSummaryRaceGender(elem){
+
+				var dataset = d3.csv("data/frequencies_for_viz.csv", (data) => {
+
+					var grouped_data = d3.nest()
+						.key((d) => d.Race)
+						.key((d) => d.Sex)
+						.entries(data);
+					
+					var data_object = [];
+
+					for (var i = 0; i < grouped_data.length; i++) {
+						var key = ('' + grouped_data[i].key).toUpperCase();
+						var values = grouped_data[i].values;
+
+						var val_objects = [];
+						for (var j = 0; j < values.length; j++) {
+							
+							val_objects.push({
+								"value": values[j].values.length,
+								"rate": (values[j].key == "M" ? "Male": "Female")
+							});
+						}
+
+						data_object.push({
+							"category": key,
+							"values": val_objects
+						});
+					}
+					
+					// console.log("MY OBJ GROUPED", data_object);
+					// drawSummaryLineChart(div_id, data_object);
+					var color = d3.scale.ordinal()
+					.range(["#92c5de","#0571b0"]);
+					// .range(["#ca0020","#f4a582","#d5d5d5","#92c5de","#0571b0"]);
+
+
+					drawGroupedBarChart(elem, data_object, color, "Count of Race-Gender");
+					
+						// });
+				});
+			}
+
+			function drawGroupedBarChart(elem, data_object, color, title) {
+				d3.select(elem).html("");
+
+					var margin = {top: 20, right: 40, bottom: 70, left: 40};
+					div_width = d3.select(elem).node().getBoundingClientRect().width;
+					div_height = d3.select(elem).node().getBoundingClientRect().height;
+					width = div_width - margin.left - margin.right;
+					height = div_height - margin.top - margin.bottom;
+					
+					height = 500 - margin.top - margin.bottom;
+
+				
+				// width = 960 - margin.left - margin.right,
+				// height = 500 - margin.top - margin.bottom;
+
+				var x0 = d3.scale.ordinal()
+					.rangeRoundBands([0, width], .1);
+
+				var x1 = d3.scale.ordinal();
+
+				var y = d3.scale.linear()
+					.range([height, 0]);
+
+				var xAxis = d3.svg.axis()
+					.scale(x0)
+					.tickSize(0)
+					.orient("bottom");
+
+				var yAxis = d3.svg.axis()
+					.scale(y)
+					.orient("left");
+
+				var svg = d3.select(elem).append("svg")
+					.attr("width", width + margin.left + margin.right)
+					.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				
+					// d3.json("data.json", function(error, data_object) {
+
+						var categoriesNames = data_object.map(function(d) { return d.category; });
+						var rateNames = data_object[0].values.map(function(d) { return d.rate; });
+
+						x0.domain(categoriesNames);
+						x1.domain(rateNames).rangeRoundBands([0, x0.rangeBand()]);
+						y.domain([0, d3.max(data_object, function(category) { return d3.max(category.values, function(d) { return d.value; }); })]);
+
+						svg.append("g")
+							.attr("class", "x axis")
+							.attr("transform", "translate(0," + height + ")")
+							.call(xAxis)
+							.append("text")
+							.classed("axis-label", true)
+							// .attr("transform", "rotate(-90)")
+							.attr("y", 40)
+							.attr("x", width / 2)
+							.attr("dy", "1em")
+							.style("text-anchor", "middle")
+							.style('font-weight','bold')
+							.text(title);
+
+						svg.append("g")
+							.attr("class", "y axis")
+							.style('opacity','0')
+							.call(yAxis)
+						.append("text")
+							.attr("transform", "rotate(-90)")
+							.attr("y", 6)
+							.attr("dy", ".71em")
+							.style("text-anchor", "end")
+							.style('font-weight','bold')
+							.text("Count");
+
+						svg.select('.y').transition().duration(500).delay(1300).style('opacity','1');
+
+						var slice = svg.selectAll(".slice")
+							.data(data_object)
+							.enter().append("g")
+							.attr("class", "g")
+							.attr("transform",function(d) { return "translate(" + x0(d.category) + ",0)"; });
+
+						slice.selectAll("rect")
+							.data(function(d) { return d.values; })
+						.enter().append("rect")
+							.attr("width", x1.rangeBand())
+							.attr("x", function(d) { return x1(d.rate); })
+							.style("fill", function(d) { return color(d.rate) })
+							.attr("y", function(d) { return y(0); })
+							.attr("height", function(d) { return height - y(0); })
+							.on("mouseover", function(d) {
+								d3.select(this).style("fill", d3.rgb(color(d.rate)).darker(2));
+							})
+							.on("mouseout", function(d) {
+								d3.select(this).style("fill", color(d.rate));
+							});
+
+						slice.selectAll("rect")
+							.transition()
+							.delay(function (d) {return Math.random()*1000;})
+							.duration(1000)
+							.attr("y", function(d) { return y(d.value); })
+							.attr("height", function(d) { return height - y(d.value); });
+
+						//Legend
+						var legend = svg.selectAll(".legend")
+							.data(data_object[0].values.map(function(d) { return d.rate; }).reverse())
+						.enter().append("g")
+							.attr("class", "legend")
+							.attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
+							.style("opacity","0");
+
+						legend.append("rect")
+							// .attr("x", width)
+							.attr("x", 80)
+							.attr("width", 18)
+							.attr("height", 18)
+							.style("fill", function(d) { return color(d); });
+
+						legend.append("text")
+							// .attr("x", width - 5)
+							.attr("x", 65)
+							.attr("y", 9)
+							.attr("dy", ".35em")
+							.style("text-anchor", "end")
+							.text(function(d) {return d; });
+
+						legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
+			}
+            function drawSummaryLineChart2(div_id) {
+                var dataset = d3.csv("data/frequencies_for_viz.csv", (data) => {
+				
+					//filtering for sex
+					var male = false
+					var female = false
+					
+					if($( 'input[name="MALE"]:checked' ).val() == 'on'){ male=true };
+					if($( 'input[name="FEMALE"]:checked' ).val() == 'on'){ female=true };
+					
+					data_filtered = data.filter(function(d) {
+						if(male && !female){return d.Sex == 'M';}
+						if(!male && female){return d.Sex == 'F';}
+						return d.Sex == 'F' || d.Sex == 'M';
+					});
+				
+                    var grouped_data = d3.nest()
+                        .key((d) => d.Race)
+                        .entries(data_filtered);
+
+                    // console.log("GROUPED LENGTH", grouped_data);
+                    console.log("GROUPED", grouped_data);
+					
+                    var data_object = [];
+
+                    for (var i = 0; i < grouped_data.length; i++) {
+                        // for (var i = 0; i < 1; i++) {
+                        var key = ('' + grouped_data[i].key).toUpperCase();
+                        var values = grouped_data[i].values;
+
+                        if ($('#race').val().length > 0 && !$('#race').val().includes(key)) {
+                            continue;
+                        }
+
+                        var to = parseInt($('#pixel_to').val());
+                        var from = parseInt($('#pixel_from').val());
+
+                        for (var j = from; j <= to; j++) {
+                            var ind = '' + j;
+                            var mean = d3.mean(values, (d) => d[ind]);
+							
+                            var obj = {};
+							
+							//offset to start indexing of data_object at 0 instead of j
+							var offset = from;
+
+                            if (data_object.length > j-offset) {
+                                // Exists
+                                obj = data_object[j-offset];
+                                obj[key] = mean;
+                            } else {
+                                obj = {
+                                    'date': j
+                                };
+                                data_object.push(obj);
+                                obj[key] = mean;
+                            }
+                        }
+                    }
+					
+					//console.log("MY OBJ", data_object);
+                    drawSummaryLineChart(div_id, data_object);
+                });
+            }
+			
+			function drawLineChart(div_id) {
+                var dataset = d3.csv("data/frequencies_for_viz.csv", (data) => {
+					var margin = {
+						top: 20,
+						right: 80,
+						bottom: 70,
+						left: 70
+					};
+
+					div_width = d3.select(div_id).node().getBoundingClientRect().width;
+					div_height = d3.select(div_id).node().getBoundingClientRect().height;
+					width = div_width - margin.left - margin.right;
+					height = div_height - margin.top - margin.bottom;
+					
+					height = 500 - margin.top - margin.bottom;
+
+					var x = d3.scale.linear()
+						.range([0, width]);
+
+					var y = d3.scale.linear()
+						.range([height, 0]);
+
+					var color = d3.scale.category10();
+					
+					var xAxis = d3.svg.axis()
+						.scale(x)
+						.orient("bottom");
+
+					var yAxis = d3.svg.axis()
+						.scale(y)
+						.orient("left");
+
+					var line = d3.svg.line()
+						.x((d) => x(d.date))
+						.y((d) => y(d.y));
+
+					d3.select(div_id).html("");
+
+					var svg = d3.select(div_id).append("svg")
+						.attr("width", width + margin.left + margin.right)
+						.attr("height", height + margin.top + margin.bottom)
+						.call(d3.behavior.zoom().on("zoom", function () {
+							svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+						}))
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+					
+					
+					//filtering for sex
+					var male = false
+					var female = false
+					
+					if($( 'input[name="MALE"]:checked' ).val() == 'on'){ male=true };
+					if($( 'input[name="FEMALE"]:checked' ).val() == 'on'){ female=true };
+					
+					data_filtered = data.filter(function(d) {
+						if(male && !female){return d.Sex == 'M';}
+						if(!male && female){return d.Sex == 'F';}
+						return d.Sex == 'F' || d.Sex == 'M';
+					});
+					
+					
+					//grouping data by race
+                    var grouped_data = d3.nest()
+                        .key((d) => d.Race.toUpperCase())
+                        .entries(data_filtered);
+					
+					//filtering for race
+					if ($('#race').val().length > 0 && $('#race').val().length < 4){
+						grouped_data = grouped_data.filter(d => $('#race').val().includes(d.key));
+					}
+					
+					race_list = grouped_data.map(function(d) {return d['key']; });
+					
+					color.domain(race_list);
+
+					var races = color.domain().map((name) => {
+						return {
+							name: name,
+							values: grouped_data.map((d) => {
+								return {
+									
+									x: d.date,
+									y: +d[name]
+								};
+							})
+						};
+					});
+					
+					var to = parseInt($('#pixel_to').val());
+                    var from = parseInt($('#pixel_from').val());
+
+					x.domain([0, 256]);
+
+					y.domain([
+						d3.min(grouped_data, (c) => {
+							return d3.min(c.values, (v) => {
+								min = d3.min(Object.values(v).slice(from,to));
+								return min
+							});
+						}),
+						d3.max(grouped_data, (c) => {
+							return d3.max(c.values, (v) => {
+								max = d3.max(Object.values(v).slice(from,to));
+								return max
+							});
+						})
+					]);
+
+					var legend = svg.selectAll('g')
+						.data(races)
+						.enter()
+						.append('g')
+						.attr('class', 'legend');
+
+					legend.append('rect')
+						.attr('x', width - 20)
+						.attr('y', (d, i) => i * 20)
+						.attr('width', 10)
+						.attr('height', 10)
+						.style('fill', (d) => color(d.name));
+
+					legend.append('text')
+						.attr('x', width - 8)
+						.attr('y', (d, i) => (i * 20) + 9)
+						.text((d) => d.name);
+
+					svg.append("g")
+						.attr("class", "x axis")
+						.attr("transform", "translate(0," + height + ")")
+						.call(xAxis)
+						.append("text")
+						.attr("transform", "rotate(0)")
+						.attr("y", 40)
+						.attr("x", width / 2)
+						.attr("dy", "1em")
+						.style("text-anchor", "middle")
+						.text("Pixels (0-255)");
+
+					svg.append("g")
+						.attr("class", "y axis")
+						.call(yAxis)
+						.append("text")
+						.attr("transform", "rotate(-90)")
+						.attr("y", 6)
+						.attr("dy", ".71em")
+						.style("text-anchor", "end")
+						.text("Value");
+					
+					//console.log(grouped_data[0]['values'])
+					
+					//how many of each line set to show
+					var n = parseInt($('#line_number').val());
+					
+					// <!-- Line Generator -->      
+					let lineGenerator = d3.svg.line()
+					  .x(function(d) { 
+						return x(d.x);})
+					  .y(function(d) { 
+						return y(d.y);})
+						
+					//get index by race
+					//if -1 not included in search
+					var asian_index = grouped_data.findIndex(function(d) {
+					  return d.key == "ASIAN"
+					});
+					
+					var black_index = grouped_data.findIndex(function(d) {
+					  return d.key == "BLACK"
+					});
+					
+					var hispanic_index = grouped_data.findIndex(function(d) {
+					  return d.key == "HISPANIC"
+					});
+					
+					var white_index = grouped_data.findIndex(function(d) {
+					  return d.key == "WHITE"
+					});
+					
+					
+					//plot asian
+					if(asian_index != -1){
+						xys0 = []
+						grouped_data[asian_index]['values'].forEach(function(d, i) {
+							obj = []
+							Object.values(d).slice(from,to).forEach(function(e, j) {
+								xy = {x:j+from, y:parseInt(e)};
+								obj.push(xy);
+							});
+							xys0.push(obj)
+						});
+						
+						opac = ((0.3 > 55/n) ? 0.3 : 55/n)
+						
+						svg.selectAll(".line0")
+							.data(xys0.slice(0,n))
+							.enter()
+							.append("path")
+							.attr("class","line")
+							.attr("d", function(d,i) {
+							  return lineGenerator(d);
+							})
+							.style("stroke", (d) => color('ASIAN'))
+							.style("opacity", opac);
+					}
+					
+					//plot hispanic
+					if(hispanic_index != -1){
+						xys2 = []
+						grouped_data[hispanic_index]['values'].forEach(function(d, i) {
+							obj = []
+							Object.values(d).slice(from,to).forEach(function(e, j) {
+								xy = {x:j+from, y:parseInt(e)};
+								obj.push(xy);
+							});
+							xys2.push(obj)
+						});
+						
+						opac = ((0.2 > 45/n) ? 0.2 : 45/n)
+						
+						svg.selectAll(".line2")
+							.data(xys2.slice(0,n))
+							.enter()
+							.append("path")
+							.attr("class","line")
+							.attr("d", function(d,i) {
+							  return lineGenerator(d);
+							})
+							.style("stroke", (d) => color('HISPANIC'))
+							.style("opacity", opac);
+					}
+					
+					//plot white
+					if(white_index != -1){
+						xys3 = []
+						grouped_data[white_index]['values'].forEach(function(d, i) {
+							obj = []
+							Object.values(d).slice(from,to).forEach(function(e, j) {
+								xy = {x:j+from, y:parseInt(e)};
+								obj.push(xy);
+							});
+							xys3.push(obj)
+						});
+						
+						opac = ((0.1 > 35/n) ? 0.1 : 50/n)
+						
+						svg.selectAll(".line3")
+							.data(xys3.slice(0,n))
+							.enter()
+							.append("path")
+							.attr("class","line")
+							.attr("d", function(d,i) {
+							  return lineGenerator(d);
+							})
+							.style("stroke", (d) => color('WHITE'))
+							.style("opacity", opac);
+					}
+					
+					//plot black
+					if(black_index != -1){
+						xys1 = []
+						grouped_data[black_index]['values'].forEach(function(d, i) {
+							obj = []
+							Object.values(d).slice(from,to).forEach(function(e, j) {
+								xy = {x:j+from, y:parseInt(e)};
+								obj.push(xy);
+							});
+							xys1.push(obj)
+						});
+						
+						opac = ((0.05 > 25/n) ? 0.05 : 25/n)
+						
+						svg.selectAll(".line1")
+							.data(xys1.slice(0,n))
+							.enter()
+							.append("path")
+							.attr("class","line")
+							.attr("d", function(d,i) {
+							  return lineGenerator(d);
+							})
+							.style("stroke", (d) => color('BLACK'))
+							.style("opacity", opac);
+					}
+                });
+            }
+
+            function drawGroupedBoxPlot(element) {
+                var dataset = d3.csv("data/frequencies_for_viz.csv", (data) => {
+                    var grouped_data = d3.nest()
+                        .key((d) => d.Race)
+                        .entries(data);
+
+                    // console.log("GROUPED LENGTH", grouped_data);
+                    console.log("GROUPED BOX", grouped_data);
+
+                    var data_object = [];
+
+                    for (var i = 0; i < grouped_data.length; i++) {
+                        // for (var i = 0; i < 1; i++) {
+                        var key = ('' + grouped_data[i].key).toUpperCase();
+                        var values = grouped_data[i].values;
+
+                        if ($('#race').val().length > 0 && !$('#race').val().includes(key)) {
+                            continue;
+                        }
+
+                        for (var j = 0; j < values.length; j++) {
+                            var val = values[j];
+                            // console.log("VALUESSS", val);
+
+
+                            // $('pixel_to').val()
+                            var to = parseInt($('#pixel_to').val());
+                            var from = parseInt($('#pixel_from').val());
+
+                            console.log("FROM-TO", from, to);
+                            // for (var k = 0; k <= 255; k++) { // Can control values of k
+                            for (var k = from; k <= to; k++) { // Can control values of k
+                                // { 'Group': "asian", 'y': 9.6084, 'x': '1' }
+
+                                var obj = {
+                                    'Group': key,
+                                    'y': val[k],
+                                    'x': k
+                                };
+
+                                data_object.push(obj);
+                            }
+
+                        }
+
+
+                    }
+
+                    console.log("MY OBJ", data_object);
+                    drawBoxPlot2(element, data_object);
+                    // drawSummaryLineChart(div_id, data_object);
+                });
+            }
+
+            function drawSummaryLineChart(div_id, data) {
+                var margin = {
+                    top: 20,
+                    right: 80,
+                    bottom: 70,
+                    left: 70
+                };
+
+                div_width = d3.select(div_id).node().getBoundingClientRect().width;
+                div_height = d3.select(div_id).node().getBoundingClientRect().height;
+                width = div_width - margin.left - margin.right;
+                height = div_height - margin.top - margin.bottom;
+
+                // width = 900 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+                var x = d3.scale.linear()
+                    .range([0, width]);
+
+                var y = d3.scale.linear()
+                    .range([height, 0]);
+
+                var color = d3.scale.category10();
+
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom");
+
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left");
+
+                var line = d3.svg.line()
+                    .x((d) => x(d.date))
+                    .y((d) => y(d.temperature));
+
+
+                // var zoom = d3.behavior.zoom()
+                //     .x(x)
+                //     .y(y)
+                //     .scaleExtent([1, 10])
+                //     .on("zoom", () => {
+                //         svg.select(".x.axis").call(xAxis);
+                //         svg.select(".y.axis").call(yAxis);
+                //         svg.selectAll('path.line').attr('d', line);
+
+                //         // points.selectAll('circle').attr("transform", function (d) {
+                //         //     return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
+                //         // }
+                //         // );
+                //     });
+
+                d3.select(div_id).html("");
+
+                var svg = d3.select(div_id).append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .call(d3.behavior.zoom().on("zoom", function () {
+                        svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                    }))
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                // var data = data_obj;
+                // console.log("SUMMARY DATA", data);
+
+                color.domain(d3.keys(data[0]).filter((key) => {
+                    return key !== "date";
+                }));
+
+                var cities = color.domain().map((name) => {
+                    return {
+                        name: name,
+                        values: data.map((d) => {
+                            return {
+                                date: d.date,
+                                temperature: +d[name]
+                            };
+                        })
+                    };
+                });
+
+                // console.log("Cities", cities);
+
+                // x.domain(d3.extent(data, (d) => {
+                //     return d.date;
+                // }));
+
+                x.domain([0, 256]);
+
+                y.domain([
+                    d3.min(cities, (c) => {
+                        return d3.min(c.values, (v) => v.temperature);
+                    }),
+                    d3.max(cities, (c) => {
+                        return d3.max(c.values, (v) => v.temperature);
+                    })
+                ]);
+
+                var legend = svg.selectAll('g')
+                    .data(cities)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend');
+
+                legend.append('rect')
+                    .attr('x', width - 20)
+                    .attr('y', (d, i) => i * 20)
+                    .attr('width', 10)
+                    .attr('height', 10)
+                    .style('fill', (d) => color(d.name));
+
+                legend.append('text')
+                    .attr('x', width - 8)
+                    .attr('y', (d, i) => (i * 20) + 9)
+                    .text((d) => d.name);
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                    .append("text")
+                    .attr("transform", "rotate(0)")
+                    .attr("y", 40)
+                    .attr("x", width / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Pixels (0-255)");
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Value");
+
+                var city = svg.selectAll(".city")
+                    .data(cities)
+                    .enter().append("g")
+                    .attr("class", "city");
+
+                city.append("path")
+                    .attr("class", "line")
+                    .attr("d", (d) => line(d.values))
+                    .style("stroke", (d) => color(d.name));
+
+                // city.append("text")
+                //     .datum((d) => {
+                //         return {
+                //             name: d.name,
+                //             value: d.values[d.values.length - 1]
+                //         };
+                //     })
+                //     .attr("transform", (d) => {
+                //         return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")";
+                //     })
+                //     .attr("x", 3)
+                //     .attr("dy", ".35em")
+                //     .text((d) => {
+                //         return d.name;
+                //     });
+            }
+
+            function drawBoxPlot2(element, dataset) {
+                d3.select(element).html("");
+
+                // var dataset = [
+                //     { 'Group': 1, 'y': 9.6084, 'x': '1' }, { 'Group': 2, 'y': 8.3853, 'x': '1' }, { 'Group': 3, 'y': 10.7726, 'x': '1' }, { 'Group': 4, 'y': 9.5266, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.4319, 'x': '1' }, { 'Group': 2, 'y': 9.4748, 'x': '1' }, { 'Group': 3, 'y': 9.7221, 'x': '1' }, { 'Group': 4, 'y': 8.8455, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.3541, 'x': '1' }, { 'Group': 2, 'y': 9.8752, 'x': '1' }, { 'Group': 3, 'y': 9.0971, 'x': '1' }, { 'Group': 4, 'y': 9.529, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.9258, 'x': '1' }, { 'Group': 2, 'y': 9.5554, 'x': '1' }, { 'Group': 3, 'y': 9.3797, 'x': '1' }, { 'Group': 4, 'y': 10.3007, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.7308, 'x': '1' }, { 'Group': 2, 'y': 10.145, 'x': '1' }, { 'Group': 3, 'y': 9.5229, 'x': '1' }, { 'Group': 4, 'y': 10.1933, 'x': '1' },
+                //     { 'Group': 1, 'y': 10.4703, 'x': '1' }, { 'Group': 2, 'y': 9.0993, 'x': '1' }, { 'Group': 3, 'y': 9.2828, 'x': '1' }, { 'Group': 4, 'y': 8.8896, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.6712, 'x': '1' }, { 'Group': 2, 'y': 9.6066, 'x': '1' }, { 'Group': 3, 'y': 9.7683, 'x': '1' }, { 'Group': 4, 'y': 8.7936, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.796, 'x': '1' }, { 'Group': 2, 'y': 9.235, 'x': '1' }, { 'Group': 3, 'y': 10.1127, 'x': '1' }, { 'Group': 4, 'y': 9.6313, 'x': '1' },
+                //     { 'Group': 1, 'y': 9.8978, 'x': '1' }, { 'Group': 2, 'y': 9.8832, 'x': '1' }, { 'Group': 3, 'y': 10.077, 'x': '1' }, { 'Group': 4, 'y': 8.9407, 'x': '1' },
+                //     { 'Group': 1, 'y': 10.6203, 'x': '1' }, { 'Group': 2, 'y': 8.9855, 'x': '1' }, { 'Group': 3, 'y': 8.8092, 'x': '1' }, { 'Group': 4, 'y': 9.2086, 'x': '1' },
+                //     { 'Group': 1, 'y': 10.0291, 'x': '1' }, { 'Group': 2, 'y': 10.6046, 'x': '1' }, { 'Group': 3, 'y': 8.93, 'x': '2' }, { 'Group': 4, 'y': 9.5811, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.1887, 'x': '2' }, { 'Group': 2, 'y': 9.7812, 'x': '2' }, { 'Group': 3, 'y': 9.4592, 'x': '2' }, { 'Group': 4, 'y': 8.8985, 'x': '2' },
+                //     { 'Group': 1, 'y': 8.8945, 'x': '2' }, { 'Group': 2, 'y': 8.9336, 'x': '2' }, { 'Group': 3, 'y': 10.5869, 'x': '2' }, { 'Group': 4, 'y': 9.3454, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.6008, 'x': '2' }, { 'Group': 2, 'y': 9.2941, 'x': '2' }, { 'Group': 3, 'y': 9.7605, 'x': '2' }, { 'Group': 4, 'y': 10.8079, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.6235, 'x': '2' }, { 'Group': 2, 'y': 10.1671, 'x': '2' }, { 'Group': 3, 'y': 9.1459, 'x': '2' }, { 'Group': 4, 'y': 10.053, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.8851, 'x': '2' }, { 'Group': 2, 'y': 9.8126, 'x': '2' }, { 'Group': 3, 'y': 9.1277, 'x': '2' }, { 'Group': 4, 'y': 9.4574, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.9153, 'x': '2' }, { 'Group': 2, 'y': 9.3335, 'x': '2' }, { 'Group': 3, 'y': 9.8309, 'x': '2' }, { 'Group': 4, 'y': 9.5283, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.3278, 'x': '2' }, { 'Group': 2, 'y': 9.2429, 'x': '2' }, { 'Group': 3, 'y': 8.8882, 'x': '2' }, { 'Group': 4, 'y': 10.1804, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.5702, 'x': '2' }, { 'Group': 2, 'y': 10.7751, 'x': '2' }, { 'Group': 3, 'y': 9.4105, 'x': '2' }, { 'Group': 4, 'y': 11.2282, 'x': '2' },
+                //     { 'Group': 1, 'y': 10.2564, 'x': '2' }, { 'Group': 2, 'y': 10.4654, 'x': '2' }, { 'Group': 3, 'y': 11.6338, 'x': '2' }, { 'Group': 4, 'y': 10.6835, 'x': '2' },
+                //     { 'Group': 1, 'y': 11.0882, 'x': '2' }, { 'Group': 2, 'y': 10.0214, 'x': '2' }, { 'Group': 3, 'y': 11.3612, 'x': '2' }, { 'Group': 4, 'y': 8.8941, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.3877, 'x': '2' }, { 'Group': 2, 'y': 9.4906, 'x': '2' }, { 'Group': 3, 'y': 8.9904, 'x': '2' }, { 'Group': 4, 'y': 9.7924, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.8169, 'x': '2' }, { 'Group': 2, 'y': 9.2744, 'x': '2' }, { 'Group': 3, 'y': 9.5026, 'x': '2' }, { 'Group': 4, 'y': 10.2441, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.6869, 'x': '2' }, { 'Group': 2, 'y': 10.5423, 'x': '2' }, { 'Group': 3, 'y': 9.6033, 'x': '2' }, { 'Group': 4, 'y': 9.3574, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.3936, 'x': '2' }, { 'Group': 2, 'y': 10.1496, 'x': '2' }, { 'Group': 3, 'y': 10.1301, 'x': '2' }, { 'Group': 4, 'y': 9.5242, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.0172, 'x': '2' }, { 'Group': 2, 'y': 10.2004, 'x': '2' }, { 'Group': 3, 'y': 11.1183, 'x': '2' }, { 'Group': 4, 'y': 9.4006, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.3979, 'x': '2' }, { 'Group': 2, 'y': 10.1518, 'x': '2' }, { 'Group': 3, 'y': 9.9497, 'x': '2' }, { 'Group': 4, 'y': 9.4862, 'x': '2' },
+                //     { 'Group': 1, 'y': 11.0661, 'x': '2' }, { 'Group': 2, 'y': 8.7973, 'x': '2' }, { 'Group': 3, 'y': 9.1521, 'x': '2' }, { 'Group': 4, 'y': 9.2269, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.3122, 'x': '2' }, { 'Group': 2, 'y': 9.3887, 'x': '2' }, { 'Group': 3, 'y': 9.4404, 'x': '2' }, { 'Group': 4, 'y': 9.303, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.5141, 'x': '2' }, { 'Group': 2, 'y': 9.1575, 'x': '2' }, { 'Group': 3, 'y': 9.1318, 'x': '2' }, { 'Group': 4, 'y': 9.5884, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.328, 'x': '2' }, { 'Group': 2, 'y': 9.4545, 'x': '2' }, { 'Group': 3, 'y': 9.3155, 'x': '2' }, { 'Group': 4, 'y': 9.7818, 'x': '2' },
+                //     { 'Group': 1, 'y': 9.6201, 'x': '2' }];
+
+                var labels2 = true;
+                // var color = d3.scale.ordinal()
+                //     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+                var margin = { top: 30, right: 50, bottom: 90, left: 70 };
+
+                var div_width = d3.select(element).node().getBoundingClientRect().width;
+                var width = div_width - margin.left - margin.right;
+                var height = 400 - margin.top - margin.bottom;
+
+                var min = Infinity,
+                    max = -Infinity;
+
+                var x0 = d3.scale.ordinal()
+                    .rangeRoundBands([0, width], .5);
+
+                var x_1 = d3.scale.ordinal();
+
+                var y_0 = d3.scale.linear()
+                    .range([height + margin.top, 0]);
+
+                var xAxis1 = d3.svg.axis()
+                    .scale(x0)
+                    .orient("bottom");
+
+                var yAxis1 = d3.svg.axis()
+                    .scale(y_0)
+                    .orient("left");
+                //.tickFormat(d3.format(".2s"));
+
+                var svg1 = d3.select(element).append("svg")
+                    .attr("class", "box")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .call(d3.behavior.zoom().on("zoom", () => {
+                        svg1.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                    }))
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                var Groups = d3.map(dataset, (d) => d.Group).keys();
+                var Dates = d3.map(dataset, (d) => d.x).keys();
+
+                var dataset2 = [];
+                var tmp = [];
+                Dates.forEach((date) => {
+                    data_tmp = []
+                    Groups.forEach((group) => {
+                        tmp = [];
+                        dataset.forEach(function (d) {
+                            if (d.x == date && d.Group == group) {
+                                tmp.push(d.y);
+                            };
+                        });
+                        // console.log("**********")
+                        data_tmp.push({ group: group, value: tmp });
+                    });
+                    dataset2.push({ Date: date, Data: data_tmp });
+                });
+
+                min = d3.min(dataset, function (d) { return d.y }) * 0.995;
+                max = d3.max(dataset, function (d) { return d.y }) * 1.005;
+
+                x0.domain(dataset.map(function (d) { return d.x; }));
+                x_1.domain(Groups).rangeRoundBands([0, x0.rangeBand()]);
+                y_0.domain([min, max]);
+
+                svg1.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + (height + margin.top) + ")")
+                    .call(xAxis1)
+                    .append("text")
+                    .attr("transform", "rotate(0)")
+                    .attr("y", 40)
+                    .attr("x", width / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Pixels (0-255) | ASIAN | BLACK | HISPANIC | WHITE");
+
+                svg1.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis1)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Pixel Value");
+
+                var boxplot = d3.box2()
+                    .whiskers(iqr(1.5))
+                    .width(x_1.rangeBand())
+                    .height(height + margin.top)
+                    .domain([min, max])
+                    .showLabels(labels2);
+
+                var state = svg1.selectAll(".state2")
+                    .data(dataset2)
+                    .enter().append("g")
+                    .attr("class", "state")
+                    .attr("transform", function (d) { return "translate(" + x0(d.Date) + ",0)"; });
+
+                state.selectAll(".box")
+                    .data(function (d) { return d.Data; })
+                    .enter().append("g")
+                    .attr("transform", function (d) { return "translate(" + x_1(d.group) + ",0)"; })
+                    .call(boxplot);
+
+                // Returns a function to compute the interquartile range.
+                function iqr(k) {
+                    return (d, i) => {
+                        var q1 = d.quartiles[0],
+                            q3 = d.quartiles[2],
+                            iqr = (q3 - q1) * k,
+                            i = -1,
+                            j = d.length;
+                        while (d[++i] < q1 - iqr);
+                        while (d[--j] > q3 + iqr);
+                        return [i, j];
+                    };
+                }
+
+            }
+
+            function drawBoxPlot(element) {
+                d3.select(element).html("");
+
+                var labels = true; // show the text labels beside individual boxplots?
+
+                var margin = { top: 30, right: 50, bottom: 100, left: 50 };
+
+                div_width = d3.select(element).node().getBoundingClientRect().width;
+                div_height = d3.select(element).node().getBoundingClientRect().height;
+                width = div_width - margin.left - margin.right;
+                height = div_height - margin.top - margin.bottom;
+
+                // var width = 800 - margin.left - margin.right;
+                var height = 500 - margin.top - margin.bottom;
+
+                var min = Infinity,
+                    max = -Infinity;
+
+                // parse in the data	
+                d3.csv("data/boxplot-asian.csv", (error, csv) => {
+                    // using an array of arrays with
+                    // data[n][2] 
+                    // where n = number of columns in the csv file 
+                    // data[i][0] = name of the ith column
+                    // data[i][1] = array of values of ith column
+
+                    // console.log("CSV", csv);
+
+                    var data = [];
+
+                    for (var i = 0; i < 5; i++) {
+                        // console.log('data[' + i + '] = [];')
+                        data[i] = [];
+                    }
+
+                    // data[0] = [];
+                    // data[1] = [];
+                    // data[2] = [];
+                    // data[3] = [];
+                    // add more rows if your csv file has more columns
+
+                    // add here the header of the csv file
+                    // data[0][0] = "Asian";
+                    // data[1][0] = "Black";
+                    // data[2][0] = "White";
+                    // data[3][0] = "Hispanic";
+
+                    for (var i = 0; i < 5; i++) {
+                        data[i][0] = i + 1;
+                    }
+                    // add more rows if your csv file has more columns
+
+                    // data[0][1] = [];
+                    // data[1][1] = [];
+                    // data[2][1] = [];
+                    // data[3][1] = [];
+                    for (var i = 0; i < 5; i++) {
+                        data[i][1] = [];
+                    }
+
+                    csv.forEach((x) => {
+                        var rowMax = -Infinity;
+                        var rowMin = Infinity;
+
+
+                        for (var i = 0; i < 5; i++) {
+                            var val = x[i + 1];
+                            rowMax = val > rowMax ? val : rowMax;
+                            rowMin = val < rowMin ? val : rowMin;
+
+                            data[i][1].push(val);
+                        }
+
+                        // var v1 = Math.floor(x.Q1),
+                        //     v2 = Math.floor(x.Q2),
+                        //     v3 = Math.floor(x.Q3),
+                        //     v4 = Math.floor(x.Q4);
+                        // add more variables if your csv file has more columns
+
+                        // var rowMax = Math.max(v1, Math.max(v2, Math.max(v3, v4)));
+                        // var rowMin = Math.min(v1, Math.min(v2, Math.min(v3, v4)));
+
+                        // data[0][1].push(v1);
+                        // data[1][1].push(v2);
+                        // data[2][1].push(v3);
+                        // data[3][1].push(v4);
+                        // add more rows if your csv file has more columns
+
+                        if (rowMax > max) max = rowMax;
+                        if (rowMin < min) min = rowMin;
+                    });
+
+                    var chart = d3.box()
+                        .whiskers(iqr(1.5))
+                        .height(height)
+                        .domain([min, max])
+                        .showLabels(labels);
+
+                    var svg = d3.select(element).append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .attr("class", "box")
+                        .call(d3.behavior.zoom().on("zoom", () => {
+                            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                        }))
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    // the x-axis
+                    var x = d3.scale.ordinal()
+                        .domain(data.map((d) => { console.log(d); return d[0] }))
+                        .rangeRoundBands([0, width], 0.7, 0.3);
+
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom");
+
+                    // the y-axis
+                    var y = d3.scale.linear()
+                        .domain([min, max])
+                        .range([height + margin.top, 0 + margin.top]);
+
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient("left");
+
+                    // draw the boxplots	
+                    svg.selectAll(".box")
+                        .data(data)
+                        .enter().append("g")
+                        .attr("transform", (d) => "translate(" + x(d[0]) + "," + margin.top + ")")
+                        .call(chart.width(x.rangeBand()));
+
+
+                    // add a title
+                    svg.append("text")
+                        .attr("x", (width / 2))
+                        .attr("y", 0 + (margin.top / 2))
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "18px")
+                        //.style("text-decoration", "underline")  
+                        .text("Boxplot per Race");
+
+                    // draw y axis
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text") // and text1
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end")
+                        .style("font-size", "16px")
+                        .text("Pixel Values");
+
+                    // draw x axis	
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + (height + margin.top + 10) + ")")
+                        .call(xAxis)
+                        .append("text")             // text label for the x axis
+                        .attr("x", (width / 2))
+                        .attr("y", 30)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "middle")
+                        .style("font-size", "16px")
+                        .text("Race: Asian | Pixels (1-5)");
+                });
+
+                // Returns a function to compute the interquartile range.
+                function iqr(k) {
+                    return (d, i) => {
+                        var q1 = d.quartiles[0],
+                            q3 = d.quartiles[2],
+                            iqr = (q3 - q1) * k,
+                            i = -1,
+                            j = d.length;
+                        while (d[++i] < q1 - iqr);
+                        while (d[--j] > q3 + iqr);
+                        return [i, j];
+                    };
+                }
+            }
+			
+			//function to draw the xray and overlay filter showing what values we are looking at
+			//inspiration from 
+			//https://www.html5rocks.com/en/tutorials/canvas/imagefilters/
+			//https://stackoverflow.com/questions/63893601/how-can-i-do-a-threshold-effect-with-canvas
+			function drawXR(element){					
+					const image = new Image;
+					//smaller image
+					//image.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg/210px-Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg";
+					// image.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg/419px-Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg";
+					image.src = "xr.jpg";
+					image.crossOrigin = "Anonymous"; // CORS 
+					image.addEventListener("load", () => applyFilter(image), {once: true});
+					const Filters = {
+						createImage(w, h) {
+							const can = document.createElement("canvas");
+							can.width = w;
+							can.height= h;  
+							return can;
+						},
+						copyImage(img) {
+							const image = this.createImage(img.width, img.height);
+							const ctx = image.getContext("2d");
+							if (img instanceof ImageData) { ctx.putImageData(img, 0, 0) }
+							else { ctx.drawImage(img, 0, 0, img.width, img.height) }
+							return image;
+						},
+						getPixels(img) {
+							if (!(img instanceof HTMLCanvasElement)) { img = this.copyImage(img) }
+							const ctx = img.getContext("2d");
+							return ctx.getImageData(0, 0, img.width, img.height);
+						},
+						threshold(pixels, thresholdLow, thresholdHigh, light = [255,255,255], dark = [0,0,0]) { // light, dark arrays of RGB
+							var d = pixels.data, i = 0, l = d.length;
+							while (l-- > 0) {
+								const v = d[i] * 0.2126 + d[i+1] * 0.7152 + d[i+2] * 0.0722;
+								[d[i], d[i+1], d[i+2]] = (v <= thresholdLow || v >=thresholdHigh) ? light : dark;
+								i += 4;
+							}
+							return pixels;
+						}
+
+					};
+					function applyFilter(image) {
+						//get the threshold values
+						var to = parseInt($('#pixel_to').val());
+						var from = parseInt($('#pixel_from').val());
+						
+						//get the image and pixel values
+						const pixels = Filters.getPixels(image);
+						
+						document.getElementById('image').innerHTML = "";
+						
+						//create threshold overlay
+						Filters.threshold(pixels, from, to);
+						const thresholdImage = Filters.copyImage(pixels);
+						original = document.getElementById('image').appendChild(image); // add original to page
+						thresh = document.getElementById('image').appendChild(thresholdImage); // add filtered to page
+						
+						//set them to the overlapping class, and the red overlay for threshold
+						original.setAttribute("class", "overlayImage");
+						thresh.setAttribute("class", "overlayImageRed");
+					}
+				}
+        </script>
+	</div>
+</body>
+
+</html>
